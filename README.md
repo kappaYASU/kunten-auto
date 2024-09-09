@@ -24,3 +24,21 @@ kuntenUI.app -- Mac用のkuntenプログラムのインターフェイスです�
 
 ※ForkuntenもkuntenUIも最初にkunten（またはkunten.exe）及びdataフォルダが置いてあるディレクトリを指定する必要があります。
  白文ファイルなどを空にした状態で取り扱い説明が排出されればOKです。
+
+ご自分でソースファイルをgccでコンパイルする場合、
+
+gcc -c -o kunten.o kunten.c
+
+gcc -c -o kunten_main.o kunten_main.c
+
+gcc -c -o utf_string.o utf_string.c
+
+gcc -c -o my_math.o my_math.c
+
+gcc -c -o tex_command.o tex_command.c
+
+gcc -o kunten kunten_main.o kunten.o utf_string.o my_math.o tex_command.o
+
+で行ってください。なお、Windows用にmingwなどでコンパイルする場合には、kunten.hの頭に#undef WINDOWSがあるので、それを#define WINDOWSにしてください。
+
+
