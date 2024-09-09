@@ -1,0 +1,22 @@
+\documentclass[a4paper]{ltjtarticle}
+\usepackage{luatexja-fontspec}
+\setmainjfont[
+  BoldFont = HaranoAjiGothic-Medium.otf
+]{HanaMinA}
+%\usepackage[deluxe, yu-win]{luatexja-preset}
+\usepackage{luakanbun4ex}
+\usepackage{graphicx}
+\usepackage{multicol}%OK
+\usepackage{luntkokugo}%OK
+\usepackage{luatuline--}%OK
+\usepackage{luatexja-ruby}%\usepackage{pxrubrica}
+\usepackage{setspace}
+\pagestyle{empty}
+\topmargin -.5in
+\oddsidemargin -.3in
+\def\katatuki#1{\raisebox{.5ex}{\small #1}}
+\setlength{\textwidth}{60\zw}
+\setlength{\textheight}{45\zw}
+\begin{document}
+
+

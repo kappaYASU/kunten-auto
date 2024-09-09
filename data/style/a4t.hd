@@ -1,0 +1,17 @@
+\documentclass[]{utarticle}
+\usepackage{ukanbun2ex}
+\usepackage[dvipdfmx]{graphicx,color}
+\usepackage{setspace}
+%\usepackage{treban}
+\usepackage{pxrubrica}
+\usepackage{plext}
+\pagestyle{empty}
+\topmargin -.5in
+\oddsidemargin -.3in
+\def\katatuki#1{\raisebox{.5ex}{\small #1}}
+\setlength{\textwidth}{60zw}
+\setlength{\textheight}{45zw}
+
+\begin{document}
+
+

@@ -1,0 +1,18 @@
+\documentclass[landscape,b4]{utarticle}
+\usepackage{ukanbun2ex}
+\usepackage[dvipdfmx]{graphicx,color}
+\usepackage{setspace}
+%\usepackage{treban}
+\usepackage{pxrubrica}
+\usepackage{plext}
+\pagestyle{empty}
+\topmargin -1in
+\oddsidemargin -.3in
+\def\katatuki#1{\raisebox{.5ex}{\small #1}}
+\setlength{\textwidth}{60zw}
+\setlength{\textheight}{98zw}
+
+\begin{document}
+
+
+

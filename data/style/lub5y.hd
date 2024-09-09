@@ -1,0 +1,24 @@
+\documentclass[b5paper,landscape]{ltjtarticle}
+%\usepackage{luatexja-fontspec}
+%\setmainjfont{HaranoAjiMincho-Regular}[% 游明朝YuMincho-Regular
+  %FontFace={l}{n}{YuMincho-Light}, % 細字
+%  BoldFont=MS-Gothic       % 太字
+%]
+%\usepackage[deluxe, yu-win]{luatexja-preset}
+\usepackage{luakanbun4ex}
+\usepackage{graphicx}
+\usepackage{multicol}%OK
+\usepackage{luntkokugo}%OK
+\usepackage{luatuline--}%OK
+\usepackage{luatexja-ruby}%\usepackage{pxrubrica}
+\usepackage{setspace}
+\pagestyle{empty}
+\topmargin -1in
+\oddsidemargin -.3in
+\def\katatuki#1{\raisebox{.5ex}{\small #1}}
+\setlength{\textwidth}{40\zw}
+\setlength{\textheight}{65\zw}
+\begin{document}
+
+
+
