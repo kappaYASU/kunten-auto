@@ -20,7 +20,6 @@ kunten.       -- MacOS用（Intel Mチップのユニヴァーサル）バイナ
 
 Forkunten.xlsm -- Windows用のVBAによるkuntenプログラムのインターフェイスです。Excelとメモ帳（Windowsの標準アクセサリ）がインストールされていることが前提です。
 
-　　　　　　　　
 kuntenUI.app -- Mac用のkuntenプログラムのインターフェイスです。簡単なテキストエディターにもなっています。メニューバーFileのOpenを使えばtxtファイルが編集できます。
 
 ※ForkuntenもkuntenUIも最初にkunten（またはkunten.exe）及びdataフォルダが置いてあるディレクトリを指定する必要があります。
