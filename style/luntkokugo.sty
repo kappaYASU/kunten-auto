@@ -1,0 +1,134 @@
+%これは、漢文問題専用のカウンターを準備するものです。
+%
+\def\@kansuji#1{\ifcase#1\or 一\or 二\or 三\or 四\or 五\or 六\or 七
+\or 八\or 九\or 十
+\or 十一\or 十二\or 十三\or 十四\or 十五\or 十六\or 十七
+\or 十八\or 十九\or 二十 
+\or 廿一\or 廿二\or 廿三\or 廿四\or 廿五\or 廿六\or 廿七
+\or 廿八\or 廿九\or 三十
+\or 丗一\or 丗二\or 丗三\or 丗四\or 丗五\or 丗六\or 丗七
+\or 丗八\or 丗九\or 四十\else\@ctrerr\fi}
+%%%
+\def\@msuji#1{\ifcase#1\or ①\or ②\or ③\or ④\or ⑤\or ⑥\or ⑦
+\or ⑧\or ⑨\or ⑩
+\or ⑪\or ⑫\or ⑬\or ⑭\or ⑮\or ⑯\or ⑰
+\or ⑱\or ⑲\or ⑳ \else\@ctrerr\fi}
+%%%
+\def\@kakkosuji#1{\ifcase#1\or ⑴\or ⑵\or ⑶\or ⑷\or ⑸\or ⑹\or ⑺
+\or ⑻\or ⑼\or ⑽\or ⑾\or ⑿\or ⒀\or ⒁\or ⒂\or ⒃\or ⒄\or ⒅
+\or ⒆\or ⒇\else\@ctrerr\fi}
+%%%
+\def\@kakkoeiji#1{\ifcase#1\or ⒜\or ⒝\or ⒞\or ⒟\or ⒠\or ⒡\or ⒢
+\or ⒣\or ⒤\or ⒥\or ⒦\or ⒧\or ⒨\or ⒩\or ⒪\or ⒫\or ⒬\or ⒭\or ⒮
+\or ⒯\or ⒰\or ⒱\or ⒲\or ⒳\or ⒴\or ⒵\else\@ctrerr\fi}
+%%%%%%%
+\def\@iroha#1{%
+  \ifcase#1\or い\or ろ\or は\or に\or ほ\or へ\or と\or ち\or り\or ぬ\or る\or を\or
+  わ\or か\or よ\or た\or れ\or そ\or つ\or ね\or な\or ら\or む\or
+  う\or ゐ\or の\or お\or く\or や\or ま\or け\or ふ\or こ\or え\or て\or 
+  あ\or さ\or き\or ゆ\or め\or み\or し\or ゑ\or ひ\or も\or せ\or す\else\@ctrerr\fi}
+\def\@kkana#1{%
+  \ifcase#1\or ア\or イ\or ウ\or エ\or オ\or カ\or キ\or ク\or ケ\or コ\or
+  サ\or シ\or ス\or セ\or ソ\or タ\or チ\or ツ\or テ\or ト\or
+  ナ\or ニ\or ヌ\or ネ\or ノ\or ハ\or ヒ\or フ\or ヘ\or ホ\else\@ctrerr\fi}
+\def\@hkana#1{%
+  \ifcase#1\or あ\or い\or う\or え\or お\or か\or き\or く\or け\or こ\or 
+  さ\or し\or す\or せ\or そ\or た\or ち\or つ\or て\or と\or 
+  な\or に\or ぬ\or ね\or の\or は\or ひ\or ふ\or へ\or ほ\else\@ctrerr\fi}
+\def\@mkana#1{%
+  \ifcase#1\or ㋐\or ㋑\or ㋒\or ㋓\or ㋔\or ㋕\or ㋖\or ㋗\or ㋘\or ㋙\or
+  ㋚\or ㋛\or ㋜\or ㋝\or ㋞\else\@ctrerr\fi}
+\def\iroha#1{\expandafter\@iroha\csname c@#1\endcsname}%いろは
+\def\kkana#1{\expandafter\@kkana\csname c@#1\endcsname}%カナ
+\def\hkana#1{\expandafter\@hkana\csname c@#1\endcsname}%かな
+\def\mkana#1{\expandafter\@mkana\csname c@#1\endcsname}%㋐㋑㋒
+\def\kakkoeiji#1{\expandafter\@kakkoeiji\csname c@#1\endcsname}%括弧英字（全角）
+\def\kakkosuji#1{\expandafter\@kakkosuji\csname c@#1\endcsname}%括弧数字（全角）
+\def\msuji#1{\expandafter\@msuji\csname c@#1\endcsname}%丸数字（全角）
+\def\kansuji#1{\expandafter\@kansuji\csname c@#1\endcsname}%漢数字
+\usepackage[shortlabels]{enumitem} %enumerate環境
+\AddEnumerateCounter{\kkana}{\@kkana}{ア}
+\AddEnumerateCounter{\kansuji}{\@kansuji}{一}
+\AddEnumerateCounter{\msuji}{\@msuji}{①}
+\SetEnumerateShortLabel{kk}{\kkana*}
+\SetEnumerateShortLabel{ks}{問\kansuji*}
+\SetEnumerateShortLabel{ms}{\msuji*}
+%詳しくはenumitem.styのマニュアルを参照して頂きたいのですが，\AddEnumerateCounter{コマンド名}{code}{最大幅のラベル}というコマンドでenumitemの新しいカウンターの表現を定義します．enumitemではenumerate環境ごとに番号ラベルの詳細をオプション引数にlabel=の形で記述できますが，毎回設定するのは面倒なので，\SetEnumerateShortLabel{key}{replacement}でkey部分をreplacement部分で置換できるようにします．ここではkkをオプション引数に入れておけば，これを（\kkana*）に置換するという意味です．\kkanaは上で定義したカウンターで，*はカウンターの番号で置き換えられていきます．
+%\usepackage{tasks} %箇条書きを横に並べる
+%\makeatletter
+%\NewPatternFormat{kk}{\@kkana}
+%\makeatother
+%\NewTasks[counter-format=tsk[kk]]{mytasks}[\item](1)
+%\NewTasks[option]{コマンド名}{separator}(標準の列数)はtasks.styで定義されているコマンドで，新しいtask環境を作ります．conter-format={counter specs}の部分で箇条書きのラベルを変更します．tskの文字列でtask-counterを置換するのですが，tskのオプション引数に入る文字としては，1, a, A, r, Rが用意されています．ここで1は\arabic, aは\alph, Aは\Alph, rは\roman, Rは\Romanを表しています．今回はこれら以外のカウンタ形式を用意するために，cntformats.styで定義されている\NewPatternFormat{pattern}{format}というコマンドを使っています．ここではkkという文字列で\@kkanaというフォーマットを表すように定義してあり，これをtskのオプション引数に入れることでtask環境のラベルを全角文字にしています．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%カウンタの定義
+\newcounter{kantoi}
+\newcounter{msujitoi}
+\newcounter{ksujitoi}
+\newcounter{keijitoi}
+\newcounter{eijitoi}
+\newcounter{Eijitoi}
+\newcounter{sujitoi}
+\newcounter{aiutoi}
+\newcounter{maiutoi}
+\newcounter{sujichu}
+\newcounter{myitem}
+%%%%%%カウンタのリセット
+\setcounter{kantoi}{0}
+\setcounter{msujitoi}{0}
+\setcounter{ksujitoi}{0}
+\setcounter{keijitoi}{0}
+\setcounter{aiutoi}{0}
+\setcounter{Eijitoi}{0}
+\setcounter{eijitoi}{0}
+\setcounter{sujitoi}{0}
+\setcounter{sujichu}{0}
+\setcounter{maiutoi}{0}
+\setcounter{myitem}{0}
+\def\resetcounter{
+\setcounter{kantoi}{0}
+\setcounter{msujitoi}{0}
+\setcounter{ksujitoi}{0}
+\setcounter{keijitoi}{0}
+\setcounter{aiutoi}{0}
+\setcounter{Eijitoi}{0}
+\setcounter{eijitoi}{0}
+\setcounter{sujitoi}{0}
+\setcounter{sujichu}{0}
+\setcounter{maiutoi}{0}
+\setcounter{myitem}{0}
+}
+%%%%各カウンタの形式の定義
+\renewcommand{\thekantoi}{\kansuji{kantoi}}
+\newcommand{\usekan}{\refstepcounter{kantoi}\thekantoi}
+\renewcommand{\thesujichu}{注\rensuji{\arabic{sujichu}}}
+\newcommand{\usechu}{\refstepcounter{sujichu}\thesujichu}
+\def\sujichutoi#1{\usechu\label{#1}}
+\renewcommand{\theeijitoi}{\rensuji{\alph{eijitoi}}}
+\newcommand{\useeiji}{\refstepcounter{eijitoi}\theeijitoi}
+\def\eimojitoi#1{\useeiji\label{#1}}
+\renewcommand{\theEijitoi}{\rensuji{\Alph{Eijitoi}}}
+\newcommand{\useEiji}{\refstepcounter{Eijitoi}\theEijitoi}
+\def\Eimojitoi#1{\useEiji\label{#1}}
+\renewcommand{\thesujitoi}{\rensuji{\arabic{sujitoi}}}
+\newcommand{\usesuji}{\refstepcounter{sujitoi}\thesujitoi}
+\def\nsujitoi#1{\usesuji\label{#1}}
+\renewcommand{\themsujitoi}{\msuji{msujitoi}}
+\newcommand{\usemsuji}{\refstepcounter{msujitoi}\themsujitoi}
+\def\marusujitoi#1{\usemsuji\label{#1}}
+\renewcommand{\theksujitoi}{\kakkosuji{ksujitoi}}
+\newcommand{\useksuji}{\refstepcounter{ksujitoi}\theksujitoi}
+\def\kakkosujitoi#1{\useksuji\label{#1}}
+\renewcommand{\thekeijitoi}{\kakkoeiji{keijitoi}}
+\newcommand{\usekeiji}{\refstepcounter{keijitoi}\thekeijitoi}
+\def\kakkoeijitoi#1{\usekeiji\label{#1}}
+\renewcommand{\theaiutoi}{\kkana{aiutoi}}
+\newcommand{\useaiu}{\refstepcounter{aiutoi}\theaiutoi}
+\def\kaiutoi#1{\useaiu\label{#1}}
+\renewcommand{\themaiutoi}{\mkana{maiutoi}}
+\newcommand{\usemaiu}{\refstepcounter{maiutoi}\themaiutoi}
+\def\maiutoi#1{\usemaiu\label{#1}}
+\newcommand{\myitemmsuji}{\refstepcounter{myitem}\msuji{myitem}}
+\newcommand{\myitemaiu}{\refstepcounter{myitem}\kkana{myitem}}
+\newcommand{\myitemmaiu}{\refstepcounter{myitem}\mkana{myitem}}
+\newcommand{\myitemksuji}{\refstepcounter{myitem}\kansuji{myitem}}
+\newcommand{\myitemiroha}{\refstepcounter{myitem}\iroha{myitem}}

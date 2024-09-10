@@ -1,0 +1,778 @@
+%%% ========================================================================
+%%% 【名称】  TeX 漢文マクロ Ver.1.1
+%%% 【ファイル名】  kanbun.sty
+%%%                               1997/05/05 閑舎 KFF03452@niftyserve.or.jp
+%%% ========================================================================
+%%% 
+%%% 　このマクロを作るにあたり、FSNOTE の ashurax さんを初め、美吉 明浩 さん、
+%%% iW さん、藤田眞作 さん、ざわ さんなど皆さんのご教授、および『LaTeX スー
+%%% パー活用術』、『LaTeX 入門 - 美文書作成のポイント -』、『LaTeX 自由自在』
+%%% 記載のマクロ、さらにクヌース先生の『TeX ブック』を参考にさせていただきま
+%%% した。謹んでお礼申し上げます。
+%%% 
+%%% 　このマクロは縦書きの漢文を出力する必要から、アスキー pTeX の縦書きスタ
+%%% イル tarticle.sty(cls) を使用することを前提に作っています。
+%%%
+%%% 　基本的に以前のヴァージョンの上位互換になっています。今回の改変は、返り
+%%% 点の位置を漢字の下に持ってきたこと、ルビ、送り仮名を漢字にバランスよく沿
+%%% わせるよう、サイズの自動調整機能を加えたこと、句読点などの禁則処理をより
+%%% 適切にしたこと、です。やはり bezier.sty が必要です（pLaTeX209）。
+%%% 
+%%% 　このマクロの著作権は私、閑舎こと、本田博通が保有します。このマクロはフ
+%%% リーソフトウェアです。あなたは Free Software Foundation が公表した GNU 
+%%% 一般公有使用許諾の「ヴァージョン 2」あるいはそれ以降のヴァージョンの中か
+%%% らいずれかを選択し、そのヴァージョンが定める条項に従って本パッケージを再
+%%% 頒布または変更することができます。
+%%% 
+%%% 　本パッケージは有用とは思いますが、頒布にあたっては、市場性及び特定目的
+%%% 適合性についての暗黙の保証を含めて、いかなる保証も行ないません。詳細に
+%%% ついては GNU 一般公有使用許諾書をお読みください。
+%%% 
+%%% 　GNU 一般公有使用許諾の写しはこのパッケージを使用する前提となっているフ
+%%% リーウェアに付属しているはずなので添付しません。必要なら 
+%%%   http://www.sra.co.jp/public/doc/gnu/gpl-2j
+%%% 等にある GPL の日本語訳を参照してください。
+\typeout{originated with kanbun.sty v.1.1 (Kansha) .....5 May 1997 \\ modified by Okazaki 15 June 2012\\ re-modified by Okazaki 31 March 2021}
+\typeout{luakanbun4ex.sty v.1.1 (Okazaki) ............. 14 July 2023 \\ finally modified by Okazaki}
+%%% 使用するパラメータ
+\usepackage{ulem}
+\newdimen\OYA
+\newdimen\KO
+\newdimen\HIRO
+\newdimen\AKI
+\newdimen\TSU
+\newdimen\MAE
+\newdimen\tsume
+\newdimen\AGE
+\newdimen\MAXYOMI
+\newlength{\hutosa}
+\setlength{\hutosa}{1.2pt}
+\newlength{\nhutosa}
+\setlength{\nhutosa}{.7pt}%%%%%%%%%%
+\newlength{\sage}
+\def\normaloya{\OYA=1.6\zw}
+\makeatletter
+\newcount\CharNum
+\def\WordCount#1{%
+  \@tempcnta\z@
+  \@tfor\member:=#1\do{\advance\@tempcnta\@ne}%
+  \CharNum\@tempcnta%
+}
+\newcount\YomiNum
+\def\WordCountYomi#1{%
+	\@tempcnta\z@
+	\@tfor\member:=#1\do{\advance\@tempcnta\@ne}%
+	\YomiNum\@tempcnta%
+}
+\newcount\OkuriNum
+\def\WordCountOkuri#1{%
+	\@tempcnta\z@
+	\@tfor\member:=#1\do{\advance\@tempcnta\@ne}%
+	\OkuriNum\@tempcnta%
+}
+% extract #2-th to #3-th characters from a character string #1,
+% then store the characters to \moji
+% 1995/05/27 by S. Fujita
+\newcount\TestCount%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\def\ShortenChar#1#2#3{\@tempcnta\z@ \TestCount=#3%%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\advance\TestCount\@ne\let\moji=\empty%%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\@tfor\member:=#1\do{\advance\@tempcnta\@ne%%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\ifnum\@tempcnta<#2\else \ifnum\@tempcnta<\TestCount%%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\xdef\moji{\moji\member}\fi\fi}}%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\newcount\TESTCount%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\def\Furiwake#1#2#3{%%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\ShortenChar{#1}{1}{#2}\let\Fmoji=\moji%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\TESTCount=#2\advance\TESTCount\@ne%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\ShortenChar{#1}{\TESTCount}{#3}\let\Rmoji=\moji%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+}%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\newcount\HalfCount%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\def\HalfLength#1{\WordCount{#1}\HalfCount=\CharNum%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\ifodd\HalfCount\advance\HalfCount by-1\fi%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\divide\HalfCount by2\relax}%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\def\jidonigyo#1{\HalfLength{#1}\Furiwake{#1}{\HalfCount}{\CharNum}}%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\def\NIKUN#1{\def\nikun{1}%%%\NIKUN%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\def\kantmpxx{#1}}%%%\NIKUN%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
+\setbox1=\hbox{\scriptsize 　}%\hbox{\scriptsize あ}%
+\def\tsume{\wd1}%
+\def\atotsume#1{\ifdim#1pt>0.8pt　\hfill\else\relax\fi}
+\def\maxhiro{\MAXYOMI=1.5\tsume\typeout{MAXYOMI=\the\MAXYOMI; HIRO=\the\HIRO}
+\ifdim\MAXYOMI>\HIRO\HIRO=1.2\MAXYOMI\fi}%
+\def\nikun{0}%%%\NIKUN
+\font\sixly=lasy6 % does not re-load if already loaded, so no memory problem.%波線用追加（2021/03/23 Okazaki)
+\def\uwaveX{\bgroup \markoverwith{\raise5pt\hbox{\sixly%波線用追加（2021/03/23 Okazaki)
+  \kern-.21\p@ \char58 \kern-.41\p@}}\ULon}%波線用追加（2021/03/23 Okazaki)
+\def\uwaveY{\bgroup \markoverwith{\raise5pt\hbox{\sixly%波線用追加（2021/03/23 Okazaki)
+  \kern.4\p@ \char58 \kern-.3\p@}}\ULon}%波線用追加（2021/03/23 Okazaki)
+\def\ulineX{\bgroup \markoverwith{\hbox
+ {\kern-.01em\vtop{\kern1ex\hrule width.3em height\hutosa}\kern-.01em}}\ULon}
+\def\ulineY{\bgroup \markoverwith{\hbox
+ {\kern.2em\vtop{\kern1ex\hrule width.3em height\hutosa}\kern-.2em}}\ULon}
+\def\uulineX{\bgroup \markoverwith{\hbox
+ {\kern-.01em\vtop{\kern1ex\hrule width.3em height\nhutosa\kern1.1\p@
+ \hrule height\nhutosa}\kern-.03em}}\ULon}
+\def\uulineY{\bgroup \markoverwith{\hbox
+ {\kern.5em\vtop{\kern1ex\hrule width.3em height\nhutosa\kern1.1\p@
+ \hrule height\nhutosa}\kern-.5em}}\ULon}
+\makeatother
+%%%
+%%%  (\KAN) \BKAN で使用する行頭禁則文字と禁則文字チェックマクロの定義
+%%%
+%%%  \getkin の #1 が \kankin のどれかなら \kankinsoku に 1、
+%%%    それ以外は 0 を入れる。
+%%%
+\def\kankin{、。」』\NG}
+\def\getkin#1{\def\kanx{#1}\ifx#1\end\let\next=\relax
+ \else\ifx\kanx\kambun\def\kankinsoku{1}\fi\let\next=\getkin\fi\next}
+ \def\tojikakko{」』}
+ \def\gettojikakko#1{\def\kanx{#1}\ifx#1\end\let\next=\relax
+ \else\ifx\kanx\kambun\def\kantojikakko{1}\fi\let\next=\gettojikakko\fi\next}
+%%%  \getkakko の #1 が \kakko のどれかなら \kankakko に 1、
+%%%    それ以外は 0 を入れる。
+%%%     okazaki(2010/03/04)
+\def\kakko{「『}
+\def\getkakko#1{\def\kakx{#1}\ifx#1\end\let\next=\relax%%okazaki(2010/03/04)
+ \else\ifx\kakx\kambun\def\kankakko{1}\fi\let\next=\getkakko\fi\next}%%okazaki(2010/03/04)
+%%%
+%%% 漢字 #1 とその周囲の訓点 #2-#6 を描くマクロ
+%%%
+%%%     #1:親字  #2:ルビ  #3:送りがな
+%%%     #4:再読文字の読み #5:再読文字の送りがな #6:返り点
+%%%
+%%%       +------+    -
+%%%       |      |    |
+%%%     #4|  #1  |#2  |
+%%%       |      |    1.6zw かそれ以上に自動的にリサイズされる
+%%%     #5+------+#3  |
+%%%        #6         |
+%%%                   -
+%%%     #2 #3 は縦にセンタリングされる（文字は基本的に scriptsize 使用固定）
+%%%     #4 #5 も　　　　　〃　　　　　（　　　　　　　　〃　　　　　　　　）
+%%%     #6 は上に詰められる（文字は基本的に footnotesize 使用固定）
+%%%
+%%% 用例: \KAN{未}{いま}{ダ}{ざ}{ルナリ}{二}
+%%%
+\newcommand{\KAN}[6]{%
+\leavevmode%
+\def\kantmpii{#2}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#3}%%nikun
+\def\kantmpiv{#4}%
+\def\kantmpvii{#4#5}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#6}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#1}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#1}%
+\WordCount{#2#3}%nikun
+\ifnum\CharNum>4\HalfLength{#2#3}%%nikun
+\jidonigyo{#2#3}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#3}%
+\WordCountYomi{#2}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+ \TSU=-.12\zw %2024/2/14
+ \HIRO=.4\OYA %2024/2/14
+ \MAE=.0\zw
+ \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+ \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+ \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+ \hbox to \OYA{\scriptsize\hfill　\kern\TSU\kantmpiii　}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+ \else
+ \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+ \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+ \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+ \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+ \hbox to \OYA{\scriptsize\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#3\hfil}
+ \fi
+ \nointerlineskip%
+ \if\kankinsoku0%
+\hbox to .8\OYA{#1\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\else\if\kantojikakko0%
+\hbox to .3\OYA{ \kern -.8\OYA#1\hfil}%%okazaki(2010/03/04)
+\else
+\hbox to .3\OYA{ \kern -.62\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%
+%%% 漢字 #1 とその周囲の訓点 #2-#6 を描くマクロ（傍線つき）
+%%%
+%%%       +------+|
+%%%       |      ||
+%%%     #4|  #1  ||#2
+%%%       |      ||
+%%%     #5+------+|#3
+%%%        #6     |
+%%%
+%%% 用例: \BKAN{未}{いま}{ダ}{ざ}{ルナリ}{二}
+%%%
+\newcommand{\BKAN}[7][1]{%
+\leavevmode%
+\def\kantmpii{#3}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#4}%%nikun
+\def\kantmpiv{#5}%
+\def\kantmpvii{#5#6}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#7}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#2}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#2}%
+\WordCount{#3#4}%nikun
+\ifnum\CharNum>4\HalfLength{#3#4}%%nikun
+\jidonigyo{#3#4}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#4}%
+\WordCountYomi{#3}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to #1\OYA{\scriptsize\ulineX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+  \else
+   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+  \hbox to #1\OYA{\scriptsize\kern-.5\zw\ulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \fi
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+ \else
+  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+ \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%番号を振るためのマクロ 追加Okazaki(2010/03/04)
+%%%       +------+|#7
+%%%       |      ||
+%%%     #4|  #1  ||#2
+%%%       |      ||
+%%%     #5+------+|#3
+%%%        #6     |
+%%%
+%%% 用例: \BBKAN{未}{いま}{ダ}{ざ}{ルナリ}{二}{#7=番号}
+%%% 
+\newcommand{\BBKAN}[8][1]{%
+\leavevmode%
+\def\kantmpix{#8}%
+\def\kantmpii{#3}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#4}%%nikun
+\def\kantmpiv{#5}%
+\def\kantmpvii{#5#6}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#7}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#2}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#2}%
+\WordCount{#3#4}%nikun
+\ifnum\CharNum>4\HalfLength{#3#4}%%nikun
+\jidonigyo{#3#4}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#4}%
+\WordCountYomi{#3}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to #1\OYA{\raisebox{.05\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\ulineX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+  \else
+  \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\ulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \fi
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+ \else
+  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+ \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%% 漢字 #1 とその周囲の訓点 #2-#6 を描くマクロ（二重傍線つき）
+%%%
+%%%       +------+||
+%%%       |      |||
+%%%     #4|  #1  |||#2
+%%%       |      |||
+%%%     #5+------+||#3
+%%%        #6     ||
+%%%
+%%% 用例: \NBKAN{未}{いま}{ダ}{ざ}{ルナリ}{二}
+%%%
+\newcommand{\NBKAN}[7][1]{%%
+\leavevmode%
+\def\kantmpii{#3}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#4}%%nikun
+\def\kantmpiv{#5}%
+\def\kantmpvii{#5#6}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#7}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#2}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#2}%
+\WordCount{#3#4}%nikun
+\ifnum\CharNum>4\HalfLength{#3#4}%%nikun
+\jidonigyo{#3#4}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#4}%
+\WordCountYomi{#3}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to #1\OYA{\scriptsize\uulineX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+  \else
+   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+  \hbox to #1\OYA{\scriptsize\kern-.7\zw\uulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \fi
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+ \else
+  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+ \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%番号を振るためのマクロ(二重傍線用) 追加Okazaki(2010/03/04)
+%%%       +------+||#7
+%%%       |      |||
+%%%     #4|  #1  |||#2
+%%%       |      |||
+%%%     #5+------+||#3
+%%%        #6     ||
+%%%
+%%% 用例: \BNBKAN{未}{いま}{ダ}{ざ}{ルナリ}{二}{#7=番号}
+%%% 
+\newcommand{\BNBKAN}[8][1]{%
+\leavevmode%
+\def\kantmpix{#8}%
+\def\kantmpii{#3}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#4}%%nikun
+\def\kantmpiv{#5}%
+\def\kantmpvii{#5#6}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#7}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#2}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#2}%
+\WordCount{#3#4}%nikun
+\ifnum\CharNum>4\HalfLength{#3#4}%%nikun
+\jidonigyo{#3#4}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#4}%
+\WordCountYomi{#3}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to #1\OYA{\raisebox{.05\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\uulineX{\hfill　\kern\TSU\kantmpiii}}%\typeout{kantmpii=zero:NIKUN}%nikun
+  \else
+   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\kern-5pt\uulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \fi
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+ \else
+  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+ \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%
+%%%　波線を引く
+%%% 漢字 #1 とその周囲の訓点 #2-#6 を描くマクロ
+%%%
+%%%     #1:親字  #2:ルビ  #3:送りがな
+%%%     #4:再読文字の読み #5:再読文字の送りがな #6:返り点
+%%%
+%%%       +------+  > -
+%%%       |      |  < |
+%%%     #4|  #1  |#2> |
+%%%       |      |  < 1.6\zw かそれ以上に自動的にリサイズされる
+%%%     #5+------+#3> |
+%%%        #6       > |
+%%%                 < -
+%%%     #2 #3 は縦にセンタリングされる（文字は基本的に scriptsize 使用固定）
+%%%     #4 #5 も　　　　　〃　　　　　（　　　　　　　　〃　　　　　　　　）
+%%%     #6 は上に詰められる（文字は基本的に footnotesize 使用固定）
+%%%
+%%% 用例: \KAN{未}{いま}{ダ}{ざ}{ルナリ}{二}
+%%%
+\newcommand{\NKAN}[7][0.95]{%
+\leavevmode%
+\def\kantmpii{#3}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#4}%%nikun
+\def\kantmpiv{#5}%
+\def\kantmpvii{#5#6}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#7}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#2}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#2}%
+\WordCount{#3#4}%nikun
+\ifnum\CharNum>4\HalfLength{#3#4}%%nikun
+\jidonigyo{#3#4}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#4}%
+\WordCountYomi{#3}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to #1\OYA{\scriptsize\uwaveX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+  \else
+   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+  \hbox to #1\OYA{\scriptsize\kern-.5\zw\uwaveX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \fi
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+ \else
+  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+ \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%　波線を引く
+%%% 漢字 #1 とその周囲の訓点 #2-#6 を描くマクロ
+%%%
+%%%     #1:親字  #2:ルビ  #3:送りがな
+%%%     #4:再読文字の読み #5:再読文字の送りがな #6:返り点
+%%%
+%%%       +------+#7> -
+%%%       |      |  < |
+%%%     #4|  #1  |#2> |
+%%%       |      |  < 1.6zw かそれ以上に自動的にリサイズされる
+%%%     #5+------+#3> |
+%%%        #6       > |
+%%%                 < -
+%%%     #2 #3 は縦にセンタリングされる（文字は基本的に scriptsize 使用固定）
+%%%     #4 #5 も　　　　　〃　　　　　（　　　　　　　　〃　　　　　　　　）
+%%%     #6 は上に詰められる（文字は基本的に footnotesize 使用固定）
+%%%
+%%% 用例: \BNKAN{未}{いま}{ダ}{ざ}{ルナリ}{二}
+%%%
+\newcommand{\BNKAN}[8][0.95]{%
+\leavevmode%
+\def\kantmpix{#8}%
+\def\kantmpii{#3}%
+\ifx\kantmpii\empty\def\kantmpii{}\fi
+\def\kantmpiii{#4}%%nikun
+\def\kantmpiv{#5}%
+\def\kantmpvii{#5#6}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#7}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}
+\def\kankakko{0}%okazaki(2010/03/04)
+\def\kambun{#2}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%
+\expandafter\getkakko\kakko\end%%okazaki(2010/03/04)
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#2}%
+\WordCount{#3#4}%nikun
+\ifnum\CharNum>4\HalfLength{#3#4}%%nikun
+\jidonigyo{#3#4}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi%%nikun
+\WordCountOkuri{#4}%
+\WordCountYomi{#3}%omit OkuriCount
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%%%okazaki(2010/03/04)
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\else%
+\if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to #1\OYA{\raisebox{.2\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\uwaveX{\hfill　\kern\TSU\kantmpiii}}%\typeout{kantmpii=zero:NIKUN}%nikun
+  \else
+   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+  \hbox to #1\OYA{\raisebox{.4\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\uwaveX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \fi
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+ \else
+  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+ \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}%
+\fi%  
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%
+%%%番号を振るためのマクロ 傍線なし。追加Okazaki(2017/01/26)
+%%%       +------+ #7
+%%%       |      | 
+%%%     #4|  #1  | #2
+%%%       |      | 
+%%%     #5+------+ #3
+%%%        #6      
+%%%
+%%% 用例: \CKAN{未}{いま}{ダ}{ざ}{ルナリ}{二}{#7=番号}
+%%% 
+\def\CKAN#1#2#3#4#5#6#7{%
+\leavevmode%
+\def\kantmpix{#7}%
+\ifx\kantmpix\empty\def\kantmpix{}\fi%必要か？
+\def\kantmpii{#2}%
+\def\kantmpiii{#3}%%nikun
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
+\def\kantmpiv{#4}%
+\def\kantmpvii{#4#5}%chosei0316
+\ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
+\def\kantmpvi{\textbf{#6}}%
+\def\kankinsoku{0}%
+\def\kantojikakko{0}%add20240906
+\def\kankakko{0}
+\def\kambun{#1}%
+\expandafter\getkin\kankin\end%
+\expandafter\gettojikakko\tojikakko\end%add20240906
+\expandafter\getkakko\kakko\end%add20240906
+\if\kankinsoku0\hskip0pt\relax\fi%
+\setbox0=\hbox{#1}%
+\WordCount{#2#3}%nikun
+\ifnum\CharNum>4\HalfLength{#2#3}%%nikun
+\jidonigyo{#2#3}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
+\else\relax\fi
+\WordCountOkuri{#3}%add20240906
+\WordCountYomi{#2}%add20240906
+\normaloya
+\KO=-0.5\zw\advance\KO by 4.5pt%\KO=-0.5\zw\advance\KO by 4.5pt
+\if\kankakko1%add20240906
+\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.28\OYA}\nolinebreak%add20240906
+\else%add20240906
+\if\kankinsoku1\nolinebreak\fi%add20240906
+\begin{minipage}[b]{\OYA}%
+  \TSU=-.12\zw %2024/2/14
+  \HIRO=.4\OYA %2024/2/14
+  \MAE=.0\zw
+  \AGE=.2\zw
+  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+  \if\nikun1\vskip-.8\zw%\nointerlineskip\relax\fi%%original \if\nikun1\vskip-.5\tsume\relax\fi
+  \hbox to \OYA{\raisebox{.1\zw}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+  \hbox to \OYA{\raisebox{.02\zw}{\scriptsize\kern-1.3\zw\kantmpix}\kern.05\zw\hfill\scriptsize\kantmpiii\hfill}
+ % \def\nikun1{0}
+  \else
+  \ifnum\YomiNum=0\AGE=0.\zw\MAE=.5\zw\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%add20240906
+  \ifnum\YomiNum=1\MAE=.5\zw\AGE=.3\zw\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=-.05zw\fi\fi%2024/2/14add20240906
+  \ifnum\YomiNum=2\TSU=.15\zw\AGE=.3\zw\MAE=.5\zw\else\relax\fi%2024/2/14
+  \ifnum\YomiNum=3\TSU=.4\zw\AGE=.3\zw\ifnum\OkuriNum>0\MAE=.5\zw\fi\else\relax\fi%2024/2/14
+  \hbox to \OYA{\raisebox{\AGE}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-\MAE\hbox to \HIRO{\hfil\kantmpii}\kern\TSU#3\hfil}%
+  \fi%
+  \nointerlineskip%
+  \if\kankinsoku0%
+    \hbox to .8\OYA{#1\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+  \else\if\kantojikakko0%
+    \hbox to .3\OYA{\kern -.8\OYA#1\hfil}%%okazaki(2010/03/04)
+ \else%
+   \hbox to .3\OYA{\kern -.62\OYA#1\hfil}%
+  \fi\fi%
+  \nointerlineskip%
+  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\end{minipage}\fi%
+\if\kankinsoku1\kern-1.1\OYA\fi
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\def\nikun{0}%
+\ignorespaces}%
+%%%
+%%%  中線を表示するマクロ
+%%%
+%%%  Usage: \CL
+%%%
+\def\CL{%
+\kern-.5\zw%
+\begin{minipage}[c]{.3\zw}%
+  \vskip-1.4\zw
+  \hrule width.4\zw height.01\zw%
+\end{minipage}%
+\hskip0\zw\kern.2\zw}
+%%%
+%%%  繰り返し記号を表示するマクロ
+%%%
+%%%  Usage: \KU
+%%%
+\def\KU{%
+\begin{minipage}<y>{1\zw}
+  \unitlength=1\zw%
+  \begin{picture}(1,1)
+    \bezier{20}(.4,.9)(.35,.85)(.6,.7)
+    \bezier{20}(.6,.7)(.9,.55)(.5,.55)
+    \bezier{20}(.5,.55)(.15,.6)(.3,.4)
+    \bezier{20}(.3,.4)(.5,.23)(.8,.1)
+  \end{picture}
+\end{minipage}}
+%%%%読みと送りがなを二行に分ける
+%%%
+%%%  一レ点  上レ点  甲レ点
+%%%
+%%%  Usage: \IR  \JR  \KR
+%%%
+\def\IR{一\kern-.7\zw レ}
+\def\JR{上\kern-.3\zw レ}
+\def\KR{甲\kern-.4\zw レ}
+\def\NG{\hbox to .4\zw{\kern -.1\zw・\hfil}\kern-1.2\zw}
+\endinput
