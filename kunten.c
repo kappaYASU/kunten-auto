@@ -1468,6 +1468,7 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
     unsigned char*  next_kan_point;
     int         juku_ret_pre, juku_ret_post,begin,last,ret,final;
     int         t_index, t_pre_index;
+    if(kan_index[index]->kun_jun < -1) return 1;
     juku_ret_pre = -1;
     juku_ret_post = -1;
     temp_kan = make_kanokuri( kun_bp );
