@@ -41,6 +41,7 @@ unsigned char* skip_yomi( unsigned char* s1);
 unsigned char* skip_kana( unsigned char* ip);
 int     del_kana_posteria( unsigned char* kana_1, unsigned char* kana_2);
 int     del_kana_posteria_list( unsigned char* kana_1, int max);
+int     b3_strcmp_out_yaku(unsigned char* s1, unsigned char* s2, int mode);
 void    init_buf( unsigned char* buf,int max);
 char*   strstrchr(char* s1, char* s2);
 unsigned char* ending_process(FILE* i_file, unsigned char* buf);
