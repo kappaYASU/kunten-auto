@@ -2668,14 +2668,15 @@ void    distribute_yomi_in_jukugo(int index, int num, unsigned char* yomi)
  */
 int kana_to_kan(kanaindex* source_okurig, int kan_i,int kan_n, int r_or_l)
 {
-    static int ip, course,res;
+    static int ip, course, res, toten;
     unsigned char* temp;
     unsigned char* temp_1;
     unsigned char* temp_okuri;
     int            temp_okuri_n, ret, con_i,post_jundoku;
     kanaindex*  okurig;
-    ret    = 0;
-    course = 1;
+    ret     = 0;
+    course  = 1;
+    toten   = 0;
     post_jundoku = -1;
     con_i = kan_i;
     if(r_or_l > -2) course = -1;
@@ -2693,7 +2694,7 @@ int kana_to_kan(kanaindex* source_okurig, int kan_i,int kan_n, int r_or_l)
         //printf("kan_i = %d: post_jundoku = %d  \n",kan_i, post_jundoku);
     }
     while(ip > -1 && kan_index[ip] != NULL){
-        if(r_or_l == -1 && kan_index[ip]->kun_jun < 0) break;
+        if(r_or_l == -1 && kan_index[ip]->kun_jun < 0) toten = 1;
             okurig = source_okurig;
         while(okurig != NULL){
             if(r_or_l == -1){//ここに判定
@@ -2752,13 +2753,14 @@ int kana_to_kan(kanaindex* source_okurig, int kan_i,int kan_n, int r_or_l)
                 else
                 {
                     if(okurig->ato == -1){
-                        res = b3_strrcmp(kan_index[ip]->okuri,okurig->kanaindex);
-                        if(res != 0 || kan_index[ip]->del_okuri > 0)
+                        res = b3_strcmp_out_yaku(kan_index[ip]->okuri,okurig->kanaindex,1);
+                        if(res == 1 || kan_index[ip]->del_okuri > 0)
                         {
                             okurig = okurig->next;
                             continue;
                         }
                         else{
+                            if(res == 3 && toten == 1) break;
                             //ここに判定
                            // if(course == -1){
                            //     printf("ato: target= %d; ip = //kan_index[%d]\n",post_jundoku, ip);
@@ -3708,8 +3710,12 @@ unsigned char* read_buf_kun( FILE* i_file)
             ku_flag = 1;
             continue;
         }
-        if(flag == 11) {
+        if(flag == 11) {//読点の処理
             if(ku_flag == 1) break;
+            strncpy((char*)bp_e, (char*)temp,flag);
+            temp_char_kun[0] = '\0';
+            bp_e = bp_e + 3;
+            continue;
         }
     }
 end:
@@ -4026,7 +4032,7 @@ start:
     f_chofuku = factorial(temp_chofuku-1);
     while(err_count < f_chofuku)
     {
-        if(basic_error > 10000){
+        if(basic_error > 50000){
             wc_print(問題が生じていてこのプログラムは中止します\n);
             printf("問題が生じていてこのプログラムは中止します\n");
             return 1;
@@ -4092,23 +4098,23 @@ start:
         }
         err_count++;
         clear_set_kanji();
-        err_count = force_swapping(chofuku_n, err_count, ret);
-    }
-    if(ret != 0 ){
-        if(non_done < 4){
-            if(non_done == 0){
-                org_file_message_with_int((unsigned char*)"temp_error_point = ", temp_error_point, (unsigned char*)"");
-                out_put_kan_index(kanindex_to_str(0, 0), kun, bun_line_read()+1);
+        if(ret != 0 || error_count > 2){
+            if(non_done < 4){
+                if(non_done == 0){
+                    org_file_message_with_int((unsigned char*)"temp_error_point = ", temp_error_point, (unsigned char*)"");
+                    out_put_kan_index(kanindex_to_str(0, 0), kun, bun_line_read()+1);
+                }
+                error_count = 0;
+                temp_error_point = -1;
+                non_done = non_done + 1;
+                goto start;
             }
-            error_count = 0;
-            temp_error_point = -1;
-            non_done = non_done + 1;
-            goto start;
+            else{
+                wc_print(訓点が妥当ではないかもしれません\n);
+                printf("訓点が妥当ではないかもしれません\n");
+            }
         }
-        else{
-            wc_print(訓点が妥当ではないかもしれません\n);
-            printf("訓点が妥当ではないかもしれません\n");
-        }
+        err_count = force_swapping(chofuku_n, err_count, ret);
     }
     if(read_verbose() > 0){
         kaeri_print();//For Debug
