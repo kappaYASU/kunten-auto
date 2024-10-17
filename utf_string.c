@@ -505,6 +505,84 @@ unsigned char* mb_strn(unsigned char* s1)
     return temp_char;
 }
 /*
+ int is_r_yaku(unsigned char* s, int mode)
+ モードで示された約物がsの最後に来るかどうかを判定する。modeに入れる数は、is_utf_charで
+ */
+int is_r_yaku(unsigned char* s)
+{
+    int             len, ret;
+    unsigned char* temp_s;
+    len = (int)strlen((char*)s);
+    if(len < 3) return 0;
+    temp_s = s + len - 3;
+    if(*temp_s != 0xE3 ) return 1;
+    if(is_utf_toten(temp_s))return 11;
+    if(is_utf_kuten(temp_s))return 13;
+    if((ret = is_utf_kakko(temp_s)) > 0)
+    {
+        return 17 * ret;
+    }
+    if((ret = is_utf_wkakko(temp_s)) > 0)
+    {
+        return 17 * ret;
+    }
+    if(is_utf_nakaten(temp_s))return 8;
+    if(is_utf_hyph(temp_s)) return 6;
+    return 0;
+}
+/*
+ int b3_strcmp_out_yaku(unsigned char* s1, unsigned char* s2, int mode)
+ modeで示された約物を除いた右端から、文字列を比較する。modeがあることを除けば、b3_strrcmpと同じである。
+ modeは
+ 0 = 通常のb3_strrcmpと同じ。
+ 1 = s1の読点を除いて比較。
+ 2 = s1の句点を除いて比較。
+ 3 = s1の句点・読点を除いて比較。
+ */
+int b3_strcmp_out_yaku(unsigned char* s1, unsigned char* s2, int mode)
+{
+    int len, len2, ret;
+    unsigned char* temp_p;
+    unsigned char* temp_p2;
+    len = (int)strlen((char*)s1);
+    len2 = (int)strlen((char*)s2);
+    if(len == 0 && len2 == 0) return 0;
+    if(len == 0 || len2 == 0) return 1;
+    temp_p = s1 + len;
+    temp_p2 = s2 + len2;
+    ret = is_r_yaku(s1);
+    switch(mode){
+        case 1:
+            if(ret == 13)
+                ret = 3;
+            break;
+        case 2:
+            if(ret == 11)
+                ret = 3;
+            break;
+        case 3:
+            if(ret == 13 || ret == 11)
+                ret = 3;
+            break;
+        default:
+            ret = 0;
+    }
+    temp_p = temp_p - ret;
+    while(temp_p2 != s2)
+    {
+        if(*temp_p == *temp_p2 )
+        {
+            temp_p = temp_p - 1;
+            temp_p2 = temp_p2 -1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+ return 0 + ret;
+}
+/*
 ３バイト文字列s1の右端が３バイト文字列s2であるかを判定する。右端がs2であれば、０、そうでなければ１を返す。
  */
 int b3_strrcmp( unsigned char* s1, unsigned char* s2)
