@@ -267,7 +267,8 @@
   \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
   \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
   \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \hbox to #1\OYA{\scriptsize\kern-.5\zw\ulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+  \hbox to #1\OYA{\scriptsize\kern-.5\zw\ulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
   \fi
   \nointerlineskip%
   \if\kankinsoku0%
@@ -339,7 +340,8 @@
   \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
   \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
   \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\ulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\ulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
   \fi
   \nointerlineskip%
   \if\kankinsoku0%
@@ -411,7 +413,8 @@
   \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
   \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
   \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \hbox to #1\OYA{\scriptsize\kern-.7\zw\uulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+  \hbox to #1\OYA{\scriptsize\kern-.7\zw\uulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
   \fi
   \nointerlineskip%
   \if\kankinsoku0%
@@ -483,7 +486,8 @@
   \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
   \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
   \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\kern-5pt\uulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\kern-5pt\uulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
   \fi
   \nointerlineskip%
   \if\kankinsoku0%
@@ -564,7 +568,8 @@
   \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
   \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
   \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \hbox to #1\OYA{\scriptsize\kern-.5\zw\uwaveX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+  \hbox to #1\OYA{\scriptsize\kern-.5\zw\uwaveX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
   \fi
   \nointerlineskip%
   \if\kankinsoku0%
@@ -645,7 +650,8 @@
   \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
   \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
   \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \hbox to #1\OYA{\raisebox{.4\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\uwaveX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#4\atotsume{#1}}}
+  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+  \hbox to #1\OYA{\raisebox{.4\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\uwaveX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
   \fi
   \nointerlineskip%
   \if\kankinsoku0%
