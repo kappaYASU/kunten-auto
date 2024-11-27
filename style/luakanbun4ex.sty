@@ -33,25 +33,27 @@
 %%%   http://www.sra.co.jp/public/doc/gnu/gpl-2j
 %%% 等にある GPL の日本語訳を参照してください。
 \typeout{originated with kanbun.sty v.1.1 (Kansha) .....5 May 1997 \\ modified by Okazaki 15 June 2012\\ re-modified by Okazaki 31 March 2021}
-\typeout{luakanbun4ex.sty v.1.1 (Okazaki) ............. 14 July 2023 \\ finally modified by Okazaki}
+\typeout{luakanbun4ex.sty v.1.1 (Okazaki) ............. 19 Nov. 2024 \\ finally modified by Okazaki}
 %%% 使用するパラメータ
 \usepackage{ulem}
-\newdimen\OYA
-\newdimen\KO
-\newdimen\HIRO
-\newdimen\AKI
-\newdimen\TSU
-\newdimen\MAE
-\newdimen\tsume
-\newdimen\AGE
-\newdimen\MAXYOMI
-\newlength{\hutosa}
-\setlength{\hutosa}{1.2pt}
-\newlength{\nhutosa}
+\newdimen\OYA%
+\newdimen\KO%
+\newdimen\HIRO%
+\newdimen\AKI%
+\newdimen\TSU%
+\newdimen\MAE%
+\newdimen\tsume%
+\newdimen\AGE%
+\newdimen\MAXYOMI%
+\newlength{\hutosa}%
+\setlength{\hutosa}{1.2pt}%
+\newlength{\nhutosa}%
 \setlength{\nhutosa}{.7pt}%%%%%%%%%%
-\newlength{\sage}
-\def\normaloya{\OYA=1.6\zw}
+\newlength{\sage}%
+\def\normaloya{\OYA=1.6\zw}%
 \makeatletter
+\newcount\tkakko
+%\tkakko = 0
 \newcount\CharNum
 \def\WordCount#1{%
   \@tempcnta\z@
@@ -94,8 +96,8 @@
 \def\kantmpxx{#1}}%%%\NIKUN%右傍読みを２行にするためのマクロ(2021/03/09 Okazaki)
 \setbox1=\hbox{\scriptsize 　}%\hbox{\scriptsize あ}%
 \def\tsume{\wd1}%
-\def\atotsume#1{\ifdim#1pt>0.8pt　\hfill\else\relax\fi}
-\def\maxhiro{\MAXYOMI=1.5\tsume\typeout{MAXYOMI=\the\MAXYOMI; HIRO=\the\HIRO}
+\def\atotsume#1{\ifdim#1pt>0.8pt　\hfill\else\relax\fi}%
+\def\maxhiro{\MAXYOMI=1.5\tsume\typeout{MAXYOMI=\the\MAXYOMI; HIRO=\the\HIRO}%
 \ifdim\MAXYOMI>\HIRO\HIRO=1.2\MAXYOMI\fi}%
 \def\nikun{0}%%%\NIKUN
 \font\sixly=lasy6 % does not re-load if already loaded, so no memory problem.%波線用追加（2021/03/23 Okazaki)
@@ -120,12 +122,15 @@
 %%%  \getkin の #1 が \kankin のどれかなら \kankinsoku に 1、
 %%%    それ以外は 0 を入れる。
 %%%
-\def\kankin{、。」』\NG}
-\def\getkin#1{\def\kanx{#1}\ifx#1\end\let\next=\relax
- \else\ifx\kanx\kambun\def\kankinsoku{1}\fi\let\next=\getkin\fi\next}
- \def\tojikakko{」』}
- \def\gettojikakko#1{\def\kanx{#1}\ifx#1\end\let\next=\relax
- \else\ifx\kanx\kambun\def\kantojikakko{1}\fi\let\next=\gettojikakko\fi\next}
+\def\kankin{、。」』・\NG}%
+\def\getkin#1{\def\kanx{#1}\ifx#1\end\let\next=\relax%
+ \else\ifx\kanx\kambun\def\kankinsoku{1}\fi\let\next=\getkin\fi\next}%
+ \def\tojikakko{」』}%test original \def\tojikakko{」』}
+ \def\gettojikakko#1{\def\kanx{#1}\ifx#1\end\let\next=\relax%
+ \else\ifx\kanx\kambun\def\kantojikakko{1}\fi\let\next=\gettojikakko\fi\next}%
+ \def\tojinikakko{』}%
+% \def\gettojinikakko#1{\def\kanx{#1}\ifx#1\end\let\next=\relax
+% \else\ifx\kanx\kambun\def\kantojinikakko{1}\fi\let\next=\gettojinikakko\fi\next}%
 %%%  \getkakko の #1 が \kakko のどれかなら \kankakko に 1、
 %%%    それ以外は 0 を入れる。
 %%%     okazaki(2010/03/04)
@@ -152,16 +157,18 @@
 %%% 用例: \KAN{未}{いま}{ダ}{ざ}{ルナリ}{二}
 %%%
 \newcommand{\KAN}[6]{%
+%\addtocounter{kakko}{1}%%
+%\ifnitojikakko\typeout{二重カッコです}\else\typeout{二重括弧ではありません}\fi
 \leavevmode%
 \def\kantmpii{#2}%
-\ifx\kantmpii\empty\def\kantmpii{}\fi
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
 \def\kantmpiii{#3}%%nikun
 \def\kantmpiv{#4}%
 \def\kantmpvii{#4#5}%chosei0316
 \ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
 \def\kantmpvi{\textbf{#6}}%
 \def\kankinsoku{0}%
-\def\kantojikakko{0}
+\def\kantojikakko{0}%
 \def\kankakko{0}%okazaki(2010/03/04)
 \def\kambun{#1}%
 \expandafter\getkin\kankin\end%
@@ -175,41 +182,44 @@
 \else\relax\fi%%nikun
 \WordCountOkuri{#3}%
 \WordCountYomi{#2}%omit OkuriCount
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\if\kantojikakko1\ifnum\tkakko=1\kern.25\zw\tkakko=0\else\tkakko=1\fi\fi%
 \begin{minipage}[b]{\OYA}%
- \TSU=-.12\zw %2024/2/14
- \HIRO=.4\OYA %2024/2/14
- \MAE=.0\zw
- \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
- \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
- \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
- \hbox to \OYA{\scriptsize\hfill　\kern\TSU\kantmpiii　}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
- \else
- \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
- \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
- \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
- \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
- \hbox to \OYA{\scriptsize\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#3\hfil}
- \fi
- \nointerlineskip%
- \if\kankinsoku0%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw%
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to \OYA{\scriptsize\hfill　\kern\TSU\kantmpiii　}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else%
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi%
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\hbox to \OYA{\scriptsize\hbox to \HIRO{\hfill\kantmpii}\kern\TSU#3\hfil}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
 \hbox to .8\OYA{#1\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-\else\if\kantojikakko0%
-\hbox to .3\OYA{ \kern -.8\OYA#1\hfil}%%okazaki(2010/03/04)
-\else
-\hbox to .3\OYA{ \kern -.62\OYA#1\hfil}%%okazaki(2010/03/04)
-\fi\fi%
+\tkakko = 0%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\tkakko = 0%
+\else%
+\hbox to .3\OYA{ \kern -.4\OYA#1\hfil}%
+\fi\fi%%okazaki2024/11/16
 \nointerlineskip%
 \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%
@@ -227,14 +237,14 @@
 \newcommand{\BKAN}[7][1]{%
 \leavevmode%
 \def\kantmpii{#3}%
-\ifx\kantmpii\empty\def\kantmpii{}\fi
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
 \def\kantmpiii{#4}%%nikun
 \def\kantmpiv{#5}%
 \def\kantmpvii{#5#6}%chosei0316
 \ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
 \def\kantmpvi{\textbf{#7}}%
 \def\kankinsoku{0}%
-\def\kantojikakko{0}
+\def\kantojikakko{0}%
 \def\kankakko{0}%okazaki(2010/03/04)
 \def\kambun{#2}%
 \expandafter\getkin\kankin\end%
@@ -248,42 +258,46 @@
 \else\relax\fi%%nikun
 \WordCountOkuri{#4}%
 \WordCountYomi{#3}%omit OkuriCount
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\if\kantojikakko1\ifnum\tkakko=1\kern.25\zw\tkakko=0\else\tkakko=1\fi\fi%
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to #1\OYA{\scriptsize\ulineX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
-  \else
-   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
-  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
-  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
-  \hbox to #1\OYA{\scriptsize\kern-.5\zw\ulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
-  \fi
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
- \else
-  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
- \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw%
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\def\kantmpii{　}\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to #1\OYA{\scriptsize\ulineX{\kantmpii\hfill\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else%
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi%
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi%
+\hbox to #1\OYA{\scriptsize\kern-.5\zw\ulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\tkakko=0%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\tkakko=0%
+\else%
+\hbox to .3\OYA{ \kern -.4\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%%okazaki2024/11/16
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%番号を振るためのマクロ 追加Okazaki(2010/03/04)
@@ -300,7 +314,7 @@
 \leavevmode%
 \def\kantmpix{#8}%
 \def\kantmpii{#3}%
-\ifx\kantmpii\empty\def\kantmpii{}\fi
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
 \def\kantmpiii{#4}%%nikun
 \def\kantmpiv{#5}%
 \def\kantmpvii{#5#6}%chosei0316
@@ -324,39 +338,40 @@
 \normaloya
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to #1\OYA{\raisebox{.05\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\ulineX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
-  \else
-  \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
-  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
-  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
-  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\ulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
-  \fi
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
- \else
-  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
- \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\def\kantmpii{　}\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to \OYA{\raisebox{.05\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\ulineX{\kantmpii\hfill\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
+\hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\ulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
+\fi
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\else%
+\hbox to .3\OYA{ \kern -.4\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%%okazaki2024/11/16
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%% 漢字 #1 とその周囲の訓点 #2-#6 を描くマクロ（二重傍線つき）
@@ -373,14 +388,14 @@
 \newcommand{\NBKAN}[7][1]{%%
 \leavevmode%
 \def\kantmpii{#3}%
-\ifx\kantmpii\empty\def\kantmpii{}\fi
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
 \def\kantmpiii{#4}%%nikun
 \def\kantmpiv{#5}%
 \def\kantmpvii{#5#6}%chosei0316
 \ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
 \def\kantmpvi{\textbf{#7}}%
 \def\kankinsoku{0}%
-\def\kantojikakko{0}
+\def\kantojikakko{0}%
 \def\kankakko{0}%okazaki(2010/03/04)
 \def\kambun{#2}%
 \expandafter\getkin\kankin\end%
@@ -394,42 +409,46 @@
 \else\relax\fi%%nikun
 \WordCountOkuri{#4}%
 \WordCountYomi{#3}%omit OkuriCount
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\if\kantojikakko1\ifnum\tkakko=1\kern.25\zw\tkakko=0\else\tkakko=1\fi\fi%
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to #1\OYA{\scriptsize\uulineX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
-  \else
-   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
-  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
-  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
-  \hbox to #1\OYA{\scriptsize\kern-.7\zw\uulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
-  \fi
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
- \else
-  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
- \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw%
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\def\kantmpii{　}\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to #1\OYA{\scriptsize\uulineX{\kantmpii\hfill\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else%
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi%
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi%
+\hbox to #1\OYA{\scriptsize\kern-.7\zw\uulineX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\tkakko=0%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\tkakko=0%
+\else%
+\hbox to .3\OYA{ \kern -.4\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%番号を振るためのマクロ(二重傍線用) 追加Okazaki(2010/03/04)
@@ -446,14 +465,14 @@
 \leavevmode%
 \def\kantmpix{#8}%
 \def\kantmpii{#3}%
-\ifx\kantmpii\empty\def\kantmpii{}\fi
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
 \def\kantmpiii{#4}%%nikun
 \def\kantmpiv{#5}%
 \def\kantmpvii{#5#6}%chosei0316
 \ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
 \def\kantmpvi{\textbf{#7}}%
 \def\kankinsoku{0}%
-\def\kantojikakko{0}
+\def\kantojikakko{0}%
 \def\kankakko{0}%okazaki(2010/03/04)
 \def\kambun{#2}%
 \expandafter\getkin\kankin\end%
@@ -467,42 +486,48 @@
 \else\relax\fi%%nikun
 \WordCountOkuri{#4}%
 \WordCountYomi{#3}%omit OkuriCount
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to #1\OYA{\raisebox{.05\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\uulineX{\hfill　\kern\TSU\kantmpiii}}%\typeout{kantmpii=zero:NIKUN}%nikun
-  \else
-   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
-  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
-  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
-  \hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\kern-5pt\uulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
-  \fi
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
- \else
-  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
- \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\def\kantmpii{　}\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to #1\OYA{\raisebox{.05\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\uulineX{\kantmpii\hfill\kern\TSU\kantmpiii}}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else%
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi%
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi%
+\hbox to #1\OYA{\raisebox{.07\zw}{\scriptsize\kern-.3\zw\kantmpix}\scriptsize\kern-5pt\uulineX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\else%
+\hbox to .3\OYA{ \kern -.5\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%%okazaki2024/11/16
+%  \else\if\kantojikakko0%
+%    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+% \else%
+%  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+% \fi\fi%
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%
@@ -535,7 +560,7 @@
 \ifx\kantmpiv\empty\def\kantmpiv{　}\fi%
 \def\kantmpvi{\textbf{#7}}%
 \def\kankinsoku{0}%
-\def\kantojikakko{0}
+\def\kantojikakko{0}%
 \def\kankakko{0}%okazaki(2010/03/04)
 \def\kambun{#2}%
 \expandafter\getkin\kankin\end%
@@ -549,42 +574,51 @@
 \else\relax\fi%%nikun
 \WordCountOkuri{#4}%
 \WordCountYomi{#3}%omit OkuriCount
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
+\if\kantojikakko1\ifnum\tkakko=1\kern.25\zw\tkakko=0\else\tkakko=1\fi\fi%
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to #1\OYA{\scriptsize\uwaveX{\hfill　\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
-  \else
-   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
-  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
-  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
-  \hbox to #1\OYA{\scriptsize\kern-.5\zw\uwaveX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
-  \fi
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
- \else
-  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
- \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw%
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\def\kantmpii{　}\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
+\hbox to #1\OYA{\scriptsize\uwaveX{\kantmpii\hfill\kern\TSU\kantmpiii}}%\def\nikun1{0}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else%
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi%
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi%
+\hbox to #1\OYA{\scriptsize\kern-.5\zw\uwaveX{\kern0.5\zw\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\tkakko=0%    
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\tkakko=0%
+\else%
+\hbox to .3\OYA{ \kern -.4\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%%okazaki2024/11/16
+%  \else\if\kantojikakko0%
+%    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+% \else%
+%  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+% \fi\fi%
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%　波線を引く
@@ -610,7 +644,7 @@
 \leavevmode%
 \def\kantmpix{#8}%
 \def\kantmpii{#3}%
-\ifx\kantmpii\empty\def\kantmpii{}\fi
+\ifx\kantmpii\empty\def\kantmpii{}\fi%
 \def\kantmpiii{#4}%%nikun
 \def\kantmpiv{#5}%
 \def\kantmpvii{#5#6}%chosei0316
@@ -631,42 +665,48 @@
 \else\relax\fi%%nikun
 \WordCountOkuri{#4}%
 \WordCountYomi{#3}%omit OkuriCount
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%%okazaki(2010/03/04)Original: \KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%%%okazaki(2010/03/04)
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#2}\kern-.28\OYA}\nolinebreak%okazaki(2010/03/04)
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%
 \if\kankinsoku1\nolinebreak\fi%\typeout{kinsokudesu}\fi
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to #1\OYA{\raisebox{.2\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\uwaveX{\hfill　\kern\TSU\kantmpiii}}%\typeout{kantmpii=zero:NIKUN}%nikun
-  \else
-   \ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi
-  \ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi
-  \ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
-  \ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi
-  \hbox to #1\OYA{\raisebox{.4\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\uwaveX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}
-  \fi
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
- \else
-  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
- \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw%
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\def\kantmpii{　}\vskip-.8\zw\nointerlineskip\relax%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{1pt}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to #1\OYA{\raisebox{.2\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\uwaveX{\kantmpii\hfill\kern\TSU\kantmpiii}}%\typeout{kantmpii=zero:NIKUN}%nikun
+\else%
+\ifnum\YomiNum=0\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\zw\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%
+\ifnum\YomiNum=1\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=.05\zw\fi\fi%
+\ifnum\YomiNum=2\TSU=.15\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.5\zw\ifnum\OkuriNum>0\MAE=-.1\zw\maxhiro\fi\else\relax\fi%2024/2/14
+\ifdim#1pt < 0.8pt\ifx\kantmpiii\empty\ifnum\YomiNum<3\def\kantmpiii{　}\fi\fi\fi%
+\hbox to #1\OYA{\raisebox{.4\zw}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-.5\zw\uwaveX{\kern5pt\hbox to \HIRO{\hfill\kantmpii}\kern\TSU\kantmpiii\atotsume{#1}}}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#2\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\else%
+\hbox to .3\OYA{ \kern -.5\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%%okazaki2024/11/16
+%  \else\if\kantojikakko0%
+% \hbox to .3\OYA{ \kern -.8\OYA#2\hfil}%%okazaki(2010/03/04)
+% \else%
+%  \hbox to .3\OYA{ \kern -.62\OYA#2\hfil}%%okazaki(2010/03/04)
+% \fi\fi%
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}%
 \fi%  
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%
@@ -693,7 +733,7 @@
 \def\kantmpvi{\textbf{#6}}%
 \def\kankinsoku{0}%
 \def\kantojikakko{0}%add20240906
-\def\kankakko{0}
+\def\kankakko{0}%
 \def\kambun{#1}%
 \expandafter\getkin\kankin\end%
 \expandafter\gettojikakko\tojikakko\end%add20240906
@@ -703,45 +743,46 @@
 \WordCount{#2#3}%nikun
 \ifnum\CharNum>4\HalfLength{#2#3}%%nikun
 \jidonigyo{#2#3}\NIKUN{\Fmoji}\let\kantmpiii=\Rmoji\let\kantmpii=\empty%%nikun
-\else\relax\fi
+\else\relax\fi%
 \WordCountOkuri{#3}%add20240906
 \WordCountYomi{#2}%add20240906
-\normaloya
+\normaloya%
 \KO=-0.5\zw\advance\KO by 4.5pt%\KO=-0.5\zw\advance\KO by 4.5pt
 \if\kankakko1%add20240906
-\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.28\OYA}\nolinebreak%add20240906
+%\kern-.2\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.28\OYA}\nolinebreak%add20240906
+\kern-.1\OYA\raisebox{-2.5\KO}{\hbox to .3\OYA{#1}\kern-.1\OYA}\nolinebreak%okazaki(2024/11/16)
 \else%add20240906
 \if\kankinsoku1\nolinebreak\fi%add20240906
 \begin{minipage}[b]{\OYA}%
-  \TSU=-.12\zw %2024/2/14
-  \HIRO=.4\OYA %2024/2/14
-  \MAE=.0\zw
-  \AGE=.2\zw
-  \ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
-  \if\nikun1\vskip-.8\zw%\nointerlineskip\relax\fi%%original \if\nikun1\vskip-.5\tsume\relax\fi
-  \hbox to \OYA{\raisebox{.1\zw}{\scriptsize\kantmpxx\hfill}}\nointerlineskip
-  \hbox to \OYA{\raisebox{.02\zw}{\scriptsize\kern-1.3\zw\kantmpix}\kern.05\zw\hfill\scriptsize\kantmpiii\hfill}
+\TSU=-.12\zw%2024/2/14
+\HIRO=.4\OYA%2024/2/14
+\MAE=.0\zw%
+\AGE=.2\zw%
+\ifx\kantmpvi\empty\vskip.4\KO\fi%%okazaki(2010/03/04)
+\if\nikun1\vskip-.8\zw%\nointerlineskip\relax\fi%%original \if\nikun1\vskip-.5\tsume\relax\fi
+\hbox to \OYA{\raisebox{.1\zw}{\scriptsize\kantmpxx\hfill}}\nointerlineskip%
+\hbox to \OYA{\raisebox{.02\zw}{\scriptsize\kern-1.3\zw\kantmpix}\kern.05\zw\hfill\scriptsize\kantmpiii\hfill}%
  % \def\nikun1{0}
-  \else
-  \ifnum\YomiNum=0\AGE=0.\zw\MAE=.5\zw\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%add20240906
-  \ifnum\YomiNum=1\MAE=.5\zw\AGE=.3\zw\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=-.05zw\fi\fi%2024/2/14add20240906
-  \ifnum\YomiNum=2\TSU=.15\zw\AGE=.3\zw\MAE=.5\zw\else\relax\fi%2024/2/14
-  \ifnum\YomiNum=3\TSU=.4\zw\AGE=.3\zw\ifnum\OkuriNum>0\MAE=.5\zw\fi\else\relax\fi%2024/2/14
-  \hbox to \OYA{\raisebox{\AGE}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-\MAE\hbox to \HIRO{\hfil\kantmpii}\kern\TSU#3\hfil}%
-  \fi%
-  \nointerlineskip%
-  \if\kankinsoku0%
-    \hbox to .8\OYA{#1\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
-  \else\if\kantojikakko0%
-    \hbox to .3\OYA{\kern -.8\OYA#1\hfil}%%okazaki(2010/03/04)
- \else%
-   \hbox to .3\OYA{\kern -.62\OYA#1\hfil}%
-  \fi\fi%
-  \nointerlineskip%
-  \raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
+\else%
+\ifnum\YomiNum=0\AGE=0.\zw\MAE=.5\zw\ifnum\OkuriNum>0\TSU=0\zw\ifnum\OkuriNum>1\TSU=-.1\ifnum\OkuriNum>2\TSU=-.2\zw\fi\fi\fi\fi%add20240906
+\ifnum\YomiNum=1\MAE=.5\zw\AGE=.3\zw\ifnum\OkuriNum=1\TSU=.08\zw\else\TSU=-.05zw\fi\fi%2024/2/14add20240906
+\ifnum\YomiNum=2\TSU=.15\zw\AGE=.3\zw\MAE=.5\zw\else\relax\fi%2024/2/14
+\ifnum\YomiNum=3\TSU=.4\zw\AGE=.3\zw\ifnum\OkuriNum>0\MAE=.5\zw\fi\else\relax\fi%2024/2/14
+\hbox to \OYA{\raisebox{\AGE}{\scriptsize\kern-1\zw\kantmpix}\scriptsize\kern-\MAE\hbox to \HIRO{\hfil\kantmpii}\kern\TSU#3\hfil}%
+\fi%
+\nointerlineskip%
+\if\kankinsoku0%
+\hbox to .8\OYA{#1\raisebox{\KO}{\footnotesize\kantmpvi}\hfil}%
+\else\if\kantojikakko0%okazaki2024/11/16
+\hbox to .3\OYA{ \kern -.6\OYA#1\hfil}%%okazaki(2010/03/04)
+\else%
+\hbox to .3\OYA{ \kern -.5\OYA#1\hfil}%%okazaki(2010/03/04)
+\fi\fi%%okazaki2024/11/16
+\nointerlineskip%
+\raisebox{-0.3\zw}{\hbox to \OYA{\scriptsize\hfill\kantmpiv\hfill#5\hfill}}%
 \end{minipage}\fi%
-\if\kankinsoku1\kern-1.1\OYA\fi
-\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi
+\if\kankinsoku1\kern-1\OYA\fi%kern-1.1 to -1 Okazaki(2024/11/16)
+\if\nikun1\ifnum\CharNum>8\kern.4\tsume\fi\ifnum\CharNum>10\kern.4\tsume\fi\ifnum\CharNum>12\kern.4\tsume\fi\else\ifnum\OkuriNum>3\kern.5\tsume\fi\fi%
 \def\nikun{0}%
 \ignorespaces}%
 %%%
@@ -752,10 +793,10 @@
 \def\CL{%
 \kern-.5\zw%
 \begin{minipage}[c]{.3\zw}%
-  \vskip-1.4\zw
+  \vskip-1.4\zw%
   \hrule width.4\zw height.01\zw%
 \end{minipage}%
-\hskip0\zw\kern.2\zw}
+\hskip0\zw\kern.2\zw}%
 %%%
 %%%  繰り返し記号を表示するマクロ
 %%%
@@ -777,8 +818,8 @@
 %%%
 %%%  Usage: \IR  \JR  \KR
 %%%
-\def\IR{一\kern-.7\zw レ}
-\def\JR{上\kern-.3\zw レ}
-\def\KR{甲\kern-.4\zw レ}
-\def\NG{\hbox to .4\zw{\kern -.1\zw・\hfil}\kern-1.2\zw}
+\def\IR{一\kern-.7\zw レ}%
+\def\JR{上\kern-.3\zw レ}%
+\def\KR{甲\kern-.4\zw レ}%
+\def\NG{\hbox to .4\zw{\kern -.1\zw・\hfil}\kern-1.2\zw}%
 \endinput
