@@ -40,5 +40,6 @@ gcc -c -o tex_command.o tex_command.c
 gcc -o kunten kunten_main.o kunten.o utf_string.o my_math.o tex_command.o
 
 で行ってください。なお、Windows用にmingwなどでコンパイルする場合には、kunten.hの頭に#undef WINDOWSがあるので、それを#define WINDOWSにしてください。
+なお、上記のコンパイルを自動化するためにcompile.shというスクリプトを追加しました。このファイルでは、コンパイラをWindows用のx86_64-w64-mingw32-gccとしていますが、Linuxで行う場合は、これをgccに変えて使って下さい。(2025/5/21)
 
 
