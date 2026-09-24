@@ -3159,6 +3159,13 @@ oyakan* set_kanji(unsigned char* stream)
             bp++;
             continue;
         }
+        if(j_char[0] == 'z' || j_char[0] == 'Z'){
+            if(jun > 0){
+                kan_index[jun-1]->gtest = 9990;
+            }
+            bp++;
+            continue;
+        }
         if((k_mode = strchr((const char*)kun_mode,*j_char)) != NULL)
         {
             if(jun > 0)kan_index[jun-1]->kunten_mode = (int)(k_mode-kun_mode);
@@ -3883,6 +3890,9 @@ int     assign_kan_index( unsigned char* kun_ori )
                 return -9;
             }
         }
+        if(kan_index[temp_index]->gtest == 9990){
+            temp_index = find_double_kanji(temp_index, 1);
+        }
         if(kan_index[temp_index]->jufuku > 4 && kan_index[temp_index]->gtest < 10000 && kan_index[temp_index]->jufuku < MAX_PRIME){
             j_flag++;
             if(err_count > 0 && !is_exhausted_dup_kan(temp_index)){
@@ -3910,7 +3920,7 @@ int     assign_kan_index( unsigned char* kun_ori )
                     e_num = count_error(kan_index[temp_index]->oya);
                     printf("収まるべき箇所は%d箇所です\n",e_num);
                     if(e_num > 0){
-                        if(!PID(kan_index[temp_index]->prop,KORE)){
+                       if(!PID(kan_index[temp_index]->prop,KORE)){
                             if(e_num < 2){
                                 kan_index[temp_index]->gtest = 10001;
                             }
@@ -4018,13 +4028,14 @@ int     assign_kan_index( unsigned char* kun_ori )
         }
     }
     penalty = penalty_count();
-    if(penalty < 0)
+    if(penalty < 1)
     {
         caution(kanindex_to_str(0, 0),(unsigned char*)"\nという白文の語順の確定に大きな問題があるようです\n");
         wc_print(打たれた訓点をよく確認してください おかしい場合 おかしい訓点(返点)が打たれた漢字にローマ字の'x'をつけて\n);
         wc_print(再度このプログラムを通してみてください\n);
-        printf("打たれた訓点をよく確認してください おかしい場合 おかしい訓点(返点)が打たれた漢字にローマ字の'x'をつけて\n");
+        printf("打たれた訓点をよく確認してください おかしい場合 おかしい訓点(返点)が打たれた漢字にローマ字の'x'または'z'をつけて\n");
         printf("再度このプログラムを通してみてください\n");
+        printf("'x'は返読を禁止する。'z'は読み飛ばす意味です。\n");
         if(read_verbose()>0)
         printf("Penalty = %d: So many problems occur in the sentence No. %d\n", penalty, bun_line_read() + 1);
     }
