@@ -3,6 +3,7 @@
 //  kunten
 //
 //  Created by 岡崎康浩 on 2023/04/25.
+//  Modified by okazaki on 2026/09/24
 //
 
 #include <stdio.h>
@@ -3807,6 +3808,36 @@ void    kunjun_setup(void)
     }
 }
 /*
+問題を起こしている漢字に入るべきところが残っているかを判定する。引数は、問題を起こしている漢字へのポインタ。残っている箇所の数
+ */
+int     count_error(unsigned char *e_kan)
+{
+    int i, e_count;
+    e_count = 0;
+    i = 0;
+    while(kan_index[i]!=NULL){
+        if(!strcmp((const char*)e_kan,kan_index[i]->oya)){
+            if(kan_index[i]->kun_jun == 0) e_count++;
+        }
+        i++;
+    }
+        return e_count;
+}
+/*
+漢字の数だけ数える。引数は現在のkan_indexの索引番号、戻り値は漢字だけの数
+ */
+int     kanji_count(int  index)
+{
+    int     count,i;
+    i = 0;
+    count = 0;
+    while(i <= index){
+        if(kan_index[i]->kun_jun > -1) count++;
+        i++;
+    }
+    return count;
+}
+/*
  次の関数は、assign_kan_indexは訓読文に現れる漢字をkan_index上の漢字に当てはめる。引数は訓読文の文字列に対するポインタ。
  戻り値はエラーの数。
  */
@@ -3816,6 +3847,8 @@ int     assign_kan_index( unsigned char* kun_ori )
     int     errors, error_jun, temp_index, ret_index, temp_jun, code,i;
     int     ori_hogo_rev, penalty;
     int     debug_ret;
+    int     e_num, k_index;
+    int     kanji_ban;
 //    int     sw1, sw2;
     pair*   swap;
 //    oyakan* temp_kan;
@@ -3871,9 +3904,30 @@ int     assign_kan_index( unsigned char* kun_ori )
                     if(read_verbose() > 0)
                     printf("error_count = %d\n",error_count);
                     errors++;
-                    printf("\x1b[31m");
+                    printf("<<");
                     printf("第%d文で、",bun_line_read()+1);
-                    printf("次の漢字に問題が生じています:%s\x1b[0m\n",kan_index[temp_index]->oya);
+                    printf("次の漢字に問題が生じています:%s>>\n",kan_index[temp_index]->oya);
+                    e_num = count_error(kan_index[temp_index]->oya);
+                    printf("収まるべき箇所は%d箇所です\n",e_num);
+                    if(e_num > 0){
+                        if(!PID(kan_index[temp_index]->prop,KORE)){
+                            if(e_num < 2){
+                                kan_index[temp_index]->gtest = 10001;
+                            }
+                            else{
+                                k_index = find_double_kanji(temp_index,1);
+                                kan_index[k_index]->gtest = 10001;
+                                kanji_ban = kanji_count(k_index);
+                                printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);
+                            }
+                        }
+                        else
+                        {
+                            kan_index[temp_index]->gtest = 10001;
+                            kanji_ban = kanji_count(temp_index);
+                            printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);
+                        }
+                    }
                     wc_print(第);
                     wd_print(bun_line_read()+1);
                     wc_print(文で次の漢字に問題が生じています: );
@@ -3886,7 +3940,7 @@ int     assign_kan_index( unsigned char* kun_ori )
                             wc_print(<<);
                             wv_print(kan_index[i]->oya);
                             wc_print(>>);
-                            printf("\x1b[31m%s \x1b[0m",kan_index[i]->oya);
+                            printf("<<%s >>",kan_index[i]->oya);
                         }
                         else{
                             wv_print(kan_index[i]->oya);
