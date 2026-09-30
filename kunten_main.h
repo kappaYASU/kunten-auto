@@ -43,6 +43,7 @@ kanlist*    hendoku_moji4;
 kanlist*    hendoku_moji5;
 kan_chain_list*    siyeki;
 kan_chain_list*    hitei_hukusi;
+kan_chain_list*    jodo_etc;
 kanakan*    kanakan_moji;
 saidoku*    saidoku_moji;
 
