@@ -54,6 +54,10 @@ kan_chain_list* find_hitei_hukusi(void)
 {
     return hitei_hukusi;
 }
+kan_chain_list* find_jodo_etc(void)
+{
+    return jodo_etc;
+}
 kanlist* find_fukusi(void)
 {
     return fukusi;
@@ -1190,7 +1194,7 @@ void usage( void )
 
 void message( void )
 {
-    printf("kunten ver. 0.99b1 date 2024. 7. 15\n");
+    printf("kunten ver. 0.99b2 date 2025. 5. 15\n");
     printf("This is a preprocessor of \"kunten\" TeX typesettig\n");
     printf("programmed by Yasuhiro Okazaki\n");
     printf("kappa-y@nn.iij4u.or.jp or kappakappa.yasu@gmail.com\n");
@@ -1355,6 +1359,7 @@ int main( int argc, char *argv[] )
     kaisi = readdata_short_okuri("kaisi.tbl","介詞","WFGQ");
     siyeki = read_kan_list("siyeki.tbl", "使役の助動詞で読む漢字");
     hitei_hukusi = read_kan_list("hiteihukusi.tbl", "否定の副詞となる漢字");
+    jodo_etc = read_kan_list("jodo_etc.tbl", "助動詞の読みをする漢字");
     no_hendoku = readdata_short_okuri("nonhendoku.tbl", "返読文字と紛れやすい漢字", "");
     haku_file = fopen(input_file_name1,"r");
     if(haku_file == NULL){
