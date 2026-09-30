@@ -72,15 +72,16 @@ const unsigned char to_sahen[4][7] = {"トセ","トシ","トス",""};
 const unsigned char full_sahen[7][4] = {"セ","シ","ス","ゼ","ジ","ズ",""};
 const unsigned char jodo[6][4] = {"ン","ム","ズ","ル","シ",""};
 const unsigned char odan_josi_rentai[10][10] = {"コトヲ","モノヲ","コト","モノ","トモ","ト","ゾ","モ","ヲ","ノ"};
-const unsigned char odan_josi_izen[3][7] = {"ドモ","ド","ト"};
-const unsigned char te_odan_josi[3][7] = {"テモ","テゾ",""};
+const unsigned char odan_josi_izen[3][10] = {"ドモ","ド","ト"};
+const unsigned char te_odan_josi[3][10] = {"テモ","テゾ",""};
 const unsigned char ka_gyo[5][4] = {"キ","ク","ケ","カ",""};
 const unsigned char non_hendoku_suffix[14][4] = {"ア","オ","コ","ゴ","ソ","ゾ","ト","ド","ノ","ホ","モ","ロ","ヲ",""};
 const unsigned char hitei_yomi[6][7] = {"ザラ","ザリ","ザル","ザレ","ズン","ズ"};
+const unsigned char jodo_yomi[18][10] = {"ベカ","ベキ","ベク","ベシ","ムトス","ントス","ゴトキ","ゴトシ","ゴトク","ゴトカ","ントシ","ムトシ","ントセ","ムトセ","ラレ","ラル","サス","サセ"};
 const char kun_mode[6] = {"fpkon"};//0=full 1=partial 2=kaeriten 3= okurigana-nomi 4=nasi
 const char moji_size[6] = {"mlLhH"};//m=large,l=Large,L=LARGE,h=huge,H=Huge
 const char line_feed_w[2][3] = {"W=","w="};
-const char mode_char[] = {"fpkontmlLhHWw=0123456789."};
+const char mode_char[26] = {"fpkontmlLhHWw=0123456789."};
 
 
 unsigned char   kana_temp_char[4];
