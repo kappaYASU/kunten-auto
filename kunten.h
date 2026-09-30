@@ -43,19 +43,20 @@
 #define YORITO              47647// Q 53*29*31
 #define DISYORI             1829// G 59*31
 //
- #define HUKUSI              128 //3
- #define HENDOKU             256  //5
- #define DAISI               512  //7
- #define KAISI               1024//11
- #define SIYEKI              2048//13
- #define NONHENDOKU          4096//17
- #define HENDOKU2            8192//19
- #define HENDOKU3            16384//23
- #define HENDOKU4            32768//29
- #define HENDOKU5            65536 //131072..262144..524288//31
- #define HITEI               1048576//2097152..4194304..8388608//53
+ #define HUKUSI              128 //3　2^7 以下の定義はビット演算を前提に定義した
+ #define HENDOKU             256  //5 2^8
+ #define DAISI               512  //7 2^9
+ #define KAISI               1024//11 2^10
+ #define SIYEKI              2048//13 2^11
+ #define NONHENDOKU          4096//17 2^12
+ #define HENDOKU2            8192//19 2^13
+ #define HENDOKU3            16384//23 2^14
+ #define HENDOKU4            32768//29 2^15
+ #define HENDOKU5            65536 //131072..262144..524288//31 2^16
+ #define HITEI               1048576//2097152..4194304..8388608//53 2^20
  #define OKI_KANA            64
- #define KORE                8388608//8388672
+ #define KORE                8388608//8388672 2^23
+ #define JODO                2097152//2^21
  /*
 #define HUKUSI              3
 #define HENDOKU             5
@@ -142,6 +143,7 @@ kanakan*       find_root_kanakan( void );
 saidoku*       find_root_saidoku( void );
 kan_chain_list* find_siyeki(void);
 kan_chain_list* find_hitei_hukusi(void);
+kan_chain_list* find_jodo_etc(void);
 kanokuri*      make_kanokuri(unsigned char* bp);
 kanokuri_index* trace_juku(int index, unsigned char* bp);
 int            process_kan(unsigned char* kun );
