@@ -2570,10 +2570,11 @@ int odori_identify(int i)
  */
 int find_hitei( int index )
 {
-    int i, j, ret, aim, count;
+    int i, ret, aim, count;
     unsigned char*  temp_i;
     unsigned char*  temp_okuri;
     char*  final;
+    int jj = 0;
     if(PID(kan_index[index]->prop, HITEI) != 0) return index;
     i = index + 1;
     ret = 0;
@@ -2583,33 +2584,29 @@ int find_hitei( int index )
         if(kan_index[i]->kun_jun > 0 && kan_index[i]->okuri_n > 2){
             temp_i = NULL;
             temp_okuri = kan_index[i]->okuri;
-            j = 0;
             if(okuri_identify(i, find_root_okuri()) == 0)
                 temp_okuri = temp_okuri + kan_index[i]->prop;
             if(*temp_okuri == '\0') goto next_i;
-            while(j < 7) {
-                temp_i = (unsigned char*)strstr((char*)temp_okuri,(char*)hitei_yomi[j]);
+            for(jj = 0; jj < 7; jj++) {
+                temp_i = (unsigned char*)strstr((char*)temp_okuri,(char*)hitei_yomi[jj]);
                 if(temp_i != NULL) {
-                    count = (int)strlen((char*)hitei_yomi[i]);
+                    count = (int)strlen((char*)hitei_yomi[jj]);
                     temp_i = temp_i + count;
                     break;
                 }
-                j++;
             }
             if(temp_i == NULL) {
                 goto next_i;
             }
  //           if(okuri_identify(i, find_root_okuri()) == 0) goto next_i;
             if(*temp_i == '\0') return index;
-            j = 0;
-            while( j < 7){
-                final = strstr((char*)temp_i,(char*)hitei_yomi[j]);
+            for(jj=0;jj<7;jj++){
+                final = strstr((char*)temp_i,(char*)hitei_yomi[jj]);
                     if(final != NULL){
 //                        if(okuri_identify(i, find_root_okuri()) != 0){
                             goto next_step;
 //                        }
                     }
-                j++;
             }
             if(temp_i == NULL) return index;
         }
@@ -2619,6 +2616,64 @@ next_step:    aim = i;
     i = index + 1;
     while(kan_index[i] != NULL && i < aim){
         if(kan_index[i]->kun_jun == 0 && PID(kan_index[i]->prop, HITEI) == 0){
+            ret = 1;
+            break;
+        }
+        i++;
+    }
+    return (ret==1?i:index);
+}
+/*
+ かな読み重複　int find_jodo( int index) そのかな読みをする漢字が、kan_index[x]（送り仮名を取ってくるところ）との間に、他にないかを探す。
+ */
+int find_jodo( int index )
+{
+    int i, ret, aim, count;
+    unsigned char*  temp_i;
+    unsigned char*  temp_okuri;
+    char*  final;
+    int jj = 0;
+    if(PID(kan_index[index]->prop, JODO) != 0) return index;
+    i = index + 1;
+    ret = 0;
+    count = 0;
+    while(kan_index[i] != NULL)
+    {
+        if(kan_index[i]->kun_jun > 0 && kan_index[i]->okuri_n > 2){
+            temp_i = NULL;
+            temp_okuri = kan_index[i]->okuri;
+            if(okuri_identify(i, find_root_okuri()) == 0)
+                temp_okuri = temp_okuri + kan_index[i]->prop;
+            if(*temp_okuri == '\0') goto next_i;
+            for(jj = 0; jj < 18; jj++) {
+                temp_i = (unsigned char*)strstr((char*)temp_okuri,(char*)jodo_yomi[jj]);
+                if(temp_i != NULL) {
+                    count = (int)strlen((char*)hitei_yomi[jj]);
+                    temp_i = temp_i + count;
+                    break;
+                }
+            }
+            if(temp_i == NULL) {
+                goto next_i;
+            }
+ //           if(okuri_identify(i, find_root_okuri()) == 0) goto next_i;
+            if(*temp_i == '\0') return index;
+            for(jj=0;jj<18;jj++){
+                final = strstr((char*)temp_i,(char*)jodo_yomi[jj]);
+                    if(final != NULL){
+//                        if(okuri_identify(i, find_root_okuri()) != 0){
+                            goto next_step;
+//                        }
+                    }
+            }
+            if(temp_i == NULL) return index;
+        }
+    next_i:        i++;
+    }
+next_step:    aim = i;
+    i = index + 1;
+    while(kan_index[i] != NULL && i < aim){
+        if(kan_index[i]->kun_jun == 0 && PID(kan_index[i]->prop, JODO) == 0){
             ret = 1;
             break;
         }
@@ -2865,6 +2920,7 @@ int      kanakan_identify(kanakan* kana_s)
         }
         strcpy((char*)kan, "");
         temp_i = find_hitei(i);
+        temp_i = find_jodo(temp_i);
         conv_i = i;
         if(i < temp_i){
             double_read = 1;
@@ -3350,6 +3406,15 @@ oyakan* set_kanji(unsigned char* stream)
                 }
                 temp_kan_chain = temp_kan_chain->next;
             }
+            temp_kan_chain = find_jodo_etc();
+            while(temp_kan_chain != NULL)
+            {
+                if(!kanji_cmp(kanji_1->oya, temp_kan_chain->listed_kan)){
+                    temp_prop = temp_prop | JODO;
+                    break;
+                }
+                temp_kan_chain = temp_kan_chain->next;
+            }
             temp_kanakan = find_root_kanakan();
             while(temp_kanakan != NULL){// ここでは、訓読文に漢字として現れない可能性のある語をマークします。
                 if(!kanji_cmp(kanji_1->oya, temp_kanakan->oya_kan)){
@@ -3525,7 +3590,7 @@ unsigned char* read_buf_kan( FILE* i_file, FILE* o_file)
             strncpy((char*)bp_e, (char*)temp,3);
             temp_char_kan[0] = '\0';
             bp_e = bp_e + 3;
-            if(ku_flag == 1){
+            if(kakko_u == 0 && ku_flag == 1){
                 break;
             }
             continue;
@@ -3655,6 +3720,25 @@ unsigned char* read_buf_kun( FILE* i_file)
         if(flag == 41){ //カタカナの場合
             if(yomi_flag || sakun_flag){
                 temp = kata_to_hira(temp);
+            }
+            if(ku_flag){
+                if(end_kakko_flag){
+                    strncpy((char*)bp_e, (char*)temp,3);
+                    temp_char_kun[0] = '\0';
+                    bp_e = bp_e + 3;
+                    continue;
+                }
+                else
+                {
+                    cont_kun_flag = 3;
+                    break;
+                }
+            }
+            else{
+                strncpy((char*)bp_e, (char*)temp,3);
+                temp_char_kun[0] = '\0';
+                bp_e = bp_e + 3;
+                continue;
             }
         }
         if(flag == 10){
@@ -3823,7 +3907,7 @@ int     count_error(unsigned char *e_kan)
     e_count = 0;
     i = 0;
     while(kan_index[i]!=NULL){
-        if(!strcmp((const char*)e_kan,kan_index[i]->oya)){
+        if(!strcmp((const char*)e_kan,(char*)kan_index[i]->oya)){
             if(kan_index[i]->kun_jun == 0) e_count++;
         }
         i++;
@@ -3891,9 +3975,10 @@ int     assign_kan_index( unsigned char* kun_ori )
             }
         }
         if(kan_index[temp_index]->gtest == 9990){
-            temp_index = find_double_kanji(temp_index, 1);
+            k_index = find_double_kanji(temp_index, 1);
+            if(k_index > -1) temp_index = k_index;
         }
-        if(kan_index[temp_index]->jufuku > 4 && kan_index[temp_index]->gtest < 10000 && kan_index[temp_index]->jufuku < MAX_PRIME){
+        if(kan_index[temp_index]->jufuku > 4 && kan_index[temp_index]->gtest < 9000 && kan_index[temp_index]->jufuku < MAX_PRIME){
             j_flag++;
             if(err_count > 0 && !is_exhausted_dup_kan(temp_index)){
                 ret_index = temp_index;
@@ -3919,25 +4004,38 @@ int     assign_kan_index( unsigned char* kun_ori )
                     printf("次の漢字に問題が生じています:%s>>\n",kan_index[temp_index]->oya);
                     e_num = count_error(kan_index[temp_index]->oya);
                     printf("収まるべき箇所は%d箇所です\n",e_num);
-                    if(e_num > 0){
+                    if(e_num == 1){
+                        kan_index[temp_index]->gtest = 10001;
+                        kanji_ban = kanji_count(temp_index);
+                        printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);
+                    }
+              /*      if(e_num > 1){
                        if(!PID(kan_index[temp_index]->prop,KORE)){
-                            if(e_num < 2){
-                                kan_index[temp_index]->gtest = 10001;
-                            }
-                            else{
-                                k_index = find_double_kanji(temp_index,1);
-                                kan_index[k_index]->gtest = 10001;
-                                kanji_ban = kanji_count(k_index);
-                                printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);
-                            }
+                                kan_index[temp_index]->gtest = 9990;
                         }
                         else
                         {
-                            kan_index[temp_index]->gtest = 10001;
-                            kanji_ban = kanji_count(temp_index);
-                            printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);
+                            if(kan_index[temp_index]->gtest != 9990){
+                                kan_index[temp_index]->gtest = 10001;
+                                
+                                kanji_ban = kanji_count(temp_index);
+                                printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);}
+                            else{
+                                k_index = find_double_kanji(temp_index, 1);
+                                if(k_index > -1){
+                                    temp_index = k_index;
+                                }
+                            }
                         }
                     }
+                    else{
+                        kan_index[temp_index]->gtest = 9990;
+                        k_index = find_double_kanji(temp_index, 1);//
+                        if(k_index > -1) temp_index = k_index;//
+                        kan_index[temp_index]->gtest = 10001;//
+                        kanji_ban = kanji_count(temp_index);
+                        printf("一応%d番目の漢字に当てはめてみます\n",kanji_ban);
+                    }*/
                     wc_print(第);
                     wd_print(bun_line_read()+1);
                     wc_print(文で次の漢字に問題が生じています: );
@@ -4028,7 +4126,7 @@ int     assign_kan_index( unsigned char* kun_ori )
         }
     }
     penalty = penalty_count();
-    if(penalty < 1)
+    if(penalty < 0)
     {
         caution(kanindex_to_str(0, 0),(unsigned char*)"\nという白文の語順の確定に大きな問題があるようです\n");
         wc_print(打たれた訓点をよく確認してください おかしい場合 おかしい訓点(返点)が打たれた漢字にローマ字の'x'をつけて\n);
