@@ -24,6 +24,7 @@ int is_utf_odori(unsigned char* odori);
 int is_utf_nakaten(unsigned char* naka);
 int is_utf_kan_or_yaku(unsigned char* cc);
 int is_utf_mkakko( unsigned char* mkakko);
+int count_moji(unsigned char* bp, unsigned char* moji);
 unsigned char* mb_strn(unsigned char* s1);
 int b3_strrcmp( unsigned char* s1, unsigned char* s2);
 int b3_strlcmp(unsigned char* s1, unsigned char* s2);

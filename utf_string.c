@@ -634,7 +634,7 @@ int b3_strlcmp(unsigned char* s1, unsigned char* s2)
  strstrを多バイト版にしたもの。多バイトコードの文字列s1の中から、同じく多バイトコード
  のs2をさがす。見つかれば、s1の中の見つかった場所のポインターを返し、見つからなければ
  NULLを返す。
- 
+
 unsigned char* mb_strstr(unsigned char* s1, unsigned char* s2)
 {
     int i, j, k, code;
@@ -656,10 +656,27 @@ unsigned char* mb_strstr(unsigned char* s1, unsigned char* s2)
         i = i + code;
     }
     return NULL;
-}*/
+}
+*/
 unsigned char* mb_strstr(unsigned char* s1, unsigned char* s2)
 {
-return (char*)strstr((char*)s1,(char*)s2);
+    return (unsigned char*)strstr((char*)s1, (char*)s2);
+}
+/*
+ int    count_moji(unsigned char* bp, unsigned char* moji)
+ bpに含まれている文字を数える。返り値はmojiが含まれている数）
+ */
+int    count_moji(unsigned char* bp, unsigned char* moji)
+{
+    int moji_count = 0;
+    unsigned char* temp_bp = bp;
+    while(temp_bp != NULL){
+        temp_bp = (unsigned char*)strstr((char*)temp_bp,(char*)moji);
+        if(temp_bp != NULL){
+            temp_bp = (unsigned char*)(temp_bp + strlen((char*)moji));
+            moji_count++;}
+    }
+    return moji_count;
 }
 /*
  strstrを３バイト版にしたもの。多バイトコードの文字列s1の中から、同じく３バイトコード

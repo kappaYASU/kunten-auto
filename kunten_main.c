@@ -147,7 +147,7 @@ void out_put_kan_index(unsigned char* haku_bp, unsigned char* kun_bp,int line)
             len = temp_kan->okuri_n;
             len = (len / 3);
             tsume = tsume + len;
-            fprintf(out_file,"%02d:%5s:送り仮名:%*s: 訓順:%02d 重複:%08ld 性質:%08ld 繋がり=%03d is_dosi= %03d ",i,temp_kan->oya,-tsume, temp_kan->okuri, temp_kan->kun_jun,temp_kan->jufuku,temp_kan->prop,temp_kan->gtest, temp_kan->is_dosi);
+            fprintf(out_file,"%02d:%5s:送り仮名:%*s: 訓順:%02d 重複:%08ld 性質:%08ld 繋がり=%03d->%03d: is_dosi= %03d ",i,temp_kan->oya,-tsume, temp_kan->okuri, temp_kan->kun_jun,temp_kan->jufuku,temp_kan->prop,temp_kan->gtest_first, temp_kan->gtest, temp_kan->is_dosi);
             if(temp_kan->label != NULL) fprintf(out_file,"ラベル: %s", temp_kan->label->comment);
             fprintf(out_file,"\n");
             i++;

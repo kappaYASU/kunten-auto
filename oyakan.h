@@ -26,7 +26,9 @@ typedef struct oyakan{
     int                 b_end;
     int                 interval;
     int                 kunten_mode;
+    long int            jukugo;
     int                 gtest;
+    int                 gtest_first;
     long int            jufuku;
     struct kanaindex*   sai_yomi;
     int                 kun_jun;
