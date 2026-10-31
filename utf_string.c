@@ -106,6 +106,22 @@ unsigned char* get_one_char_stream(unsigned char* bp)
     return temp_char;
 }
 /*
+ bpから一文字分（１〜４バイトまで）を切り出してt_charに納める。戻り値はその文字を除いたbpへのポインター、
+ なお操作を行った場合、bpはその文字を除いたものとなる。
+ */
+unsigned char* get_one_char_stream_2(unsigned char* t_char, unsigned char* bp)
+{
+    int code,i;
+    t_char[0] = '\0';
+    code = one_character(*bp);
+    for(i = 0; i < code; i++){
+        t_char[i] = *bp;
+        bp++;
+    }
+    t_char[i] = '\0';
+    return bp;
+}
+/*
  kanindex_to_str(int start, int end)は、kan_indexに収められた漢字から白文の文字列を生成する。
  戻り値は、文字列 unsigned charポインタ、startは初めのkan_indexへのインデックス、endは最後のインデックス。
  endに０を指定するか、または、最大読み込み白文以上（１００以上）を指定すると、文末までの文字列とする。
@@ -820,6 +836,15 @@ unsigned char* next_kanji( unsigned char* stream )
     return NULL;
 }
 /*
+ 2つの文字の同一かどうかを判定。０なら同一、それ以外なら不一致。
+ */
+int     identity_moji(unsigned *c1, unsigned *c2)
+{
+    int ret;
+    ret     = memcmp(c1,c2,4);
+    return ret;
+}
+/*
  ストリームkpから漢字を一字抜き出す。ストリームの先頭が漢字でなければ、kpをそのまま返す。
  */
 unsigned char* del_kanji(unsigned char* kp)
@@ -831,7 +856,7 @@ unsigned char* del_kanji(unsigned char* kp)
 }
 
 /*
- 訓読文s1の中から()で囲まれた読みの部分を除き次の漢字のポインタを返す。
+ 訓読文s1の中から()で囲まれた読みの部分を除き次の文字のポインタを返す。
  */
 unsigned char* skip_yomi( unsigned char* s1)
 {
@@ -878,6 +903,24 @@ start:    if(*temp_bp != '(' && *temp_bp != '[') return temp_bp;
             return temp_bp;
     }
     return temp_bp;
+}
+/*
+ unsigned char* get_okuri(unsigned char* bp, unsigned char* temp)
+ 訓読文のポインタbpから、送り仮名を切り出す。切り出された送り仮名は、tempに保存され、戻り値は、そのtempへのポインタ。
+ */
+unsigned char* get_okuri(unsigned char* bp, unsigned char* temp)
+{
+    unsigned char *temp_bp, *temp2_bp;
+    temp_bp = bp;
+    temp2_bp = skip_yomi(temp_bp);
+    temp_bp = next_kanji(temp2_bp);
+    if(temp_bp == NULL){
+        strcpy((char*)temp,(char*)temp2_bp);
+    }
+    else{
+        strncpy((char*)temp,(char*)temp2_bp,temp_bp - temp2_bp);
+    }
+    return temp;
 }
 /*
  del_kana_posteria()は、kana1とkana2を比較し、kana2がkana1の最後部と一致した場合、

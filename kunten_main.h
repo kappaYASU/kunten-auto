@@ -18,6 +18,7 @@
 #include "kunten.h"
 #include "utfstring.h"
 #include "tex_command.h"
+#include "my_math.h"
 //#include "my_math.h"
 
 FILE*           haku_file;
@@ -56,6 +57,9 @@ int            read_non_sai_okiji(void);
 unsigned char* read_buf_kan( FILE* i_file, FILE* o_file);
 unsigned char* read_buf_kun( FILE* i_file);
 void           init_kakko_u( void );
+int            find_juku_pair(pair juku_pair[], int start, int end);
+int            relocation_jukugo(pair jukugo_pair,pair dist_pair,int start);
+int            clear_jukugo(pair jukugo_pair);
 itai*          readdata_itai( void );
 kanlist*       readdata_long_okuri(const char* f_name, const char* sp_name, const char* marker);
 kanlist*       readdata_short_okuri(const char* f_name, const char* sp_name, const char* marker);

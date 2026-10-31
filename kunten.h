@@ -83,6 +83,7 @@ unsigned char* dl_replace( unsigned char* s1, unsigned char* s2);
 int            one_character(unsigned char str);
 unsigned char* get_one_char( FILE* i_file, unsigned char* temp);
 unsigned char* get_one_char_stream(unsigned char* bp);
+unsigned char* get_one_char_stream_2(unsigned char* t_char, unsigned char* bp);
 kanaindex*     redup_kanaindex(kanaindex* ori_kana, unsigned char* real, int f);
 kanaindex*     expand_kana(kanaindex* ori_kana, char a, char b, int flag);
 kanatuki*      expand_kana_abb(kanatuki* ori_kana, unsigned char cc, int cp);
@@ -117,6 +118,8 @@ int            juku_before_identify(int index, kanokuri* kan_temp_1, unsigned ch
 int            juku_after_identify(int index, int kun_jun_t, kanokuri* temp_kan, unsigned char* bp);
 int            connect_match( int kan_1, unsigned char* okuri1, int kan_2, kanokuri* kan_okuri2, unsigned char* bp, int juku);
 int            duplicate_case( int index, int kun_jun, unsigned char* kun_p);
+int            find_rengo(unsigned char* kan1, unsigned char* kan2, int start, int mode);
+int            is_rengo(int index, unsigned char* kan);
 int            assign_kan_index( unsigned char* kun );
 int            force_swapping(int chofuku,int error, int pre_error);
 int            is_real_succeeding_kan(int pre_index, int index, kanokuri* suc_bp, int jun, int juku);
@@ -127,6 +130,8 @@ int            pre_connect_match(int index, int jun, kanokuri* kan_t, int target
 int            post_connect_match(int index, int jun, kanokuri* kan_t, int target);
 int            is_conj_josi( int index, unsigned char* josi, unsigned char* okuri, int mode);
 int            stop_infinite_loop(int error, int temp_i, int pre_temp_i);
+int            normalize_kun(unsigned char* kun);
+int            find_double_rengo( int rengo[], int index, unsigned char* next_kan );
 itai*          find_root_itai( void );
 kanlist*       find_hendoku_moji( void );
 kanlist*       find_hendoku_moji2(void);
@@ -157,6 +162,7 @@ void           org_file_message_with_int(unsigned char* s1, int dix, unsigned ch
 void           org_file_message(unsigned char* s1);
 int            read_kuten_error( void );
 int            g_test_read(void);
+//int            juku_flag;
 
 #ifdef DEBUG
 int            debug_stop( int mark);
