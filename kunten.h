@@ -132,6 +132,7 @@ int            is_conj_josi( int index, unsigned char* josi, unsigned char* okur
 int            stop_infinite_loop(int error, int temp_i, int pre_temp_i);
 int            normalize_kun(unsigned char* kun);
 int            find_double_rengo( int rengo[], int index, unsigned char* next_kan );
+int            number_of_marked(int start, int end, int mode);
 itai*          find_root_itai( void );
 kanlist*       find_hendoku_moji( void );
 kanlist*       find_hendoku_moji2(void);
@@ -162,7 +163,8 @@ void           org_file_message_with_int(unsigned char* s1, int dix, unsigned ch
 void           org_file_message(unsigned char* s1);
 int            read_kuten_error( void );
 int            g_test_read(void);
-//int            juku_flag;
+int            is_rentai(unsigned char* gobi);
+int            count_jukugo_moji(unsigned char* kun);
 
 #ifdef DEBUG
 int            debug_stop( int mark);

@@ -688,6 +688,18 @@ int     daisi_identify(int  index )
     return 1;
 }
 /*
+ 語尾が連体形かどうかを判定する。連体形と判定されれば0、そうでなければ1を返す。
+ */
+int     is_rentai(unsigned char* gobi)
+{
+    int i = 0;
+    while(i < 15){
+        if(!b3_strrcmp(gobi,(unsigned char*)rentai[i])) return 0;
+        i++;
+    }
+    return 1;
+}
+/*
  副詞を確定させる hukusi_property_identifyは、kan_index上の漢字Aが副詞かどうかを確定させる。引数は、
  hendoku_property_identifyとおなじであるが、送り仮名は完全一致で、戻り値は妥当な場合当該の性質を示す数、そうでない場合１
  */
@@ -1099,12 +1111,20 @@ int     find_jukugo(int index, unsigned char* kun)
     else{
         cut_from_string(temp_okuri, temp_bp2, temp_bp);
     }
-    if(*temp_okuri == '\0'){
+    if(temp_bp != NULL && *temp_okuri == '\0'){
         len = is_utf_kanji(temp_bp);
         strncpy((char*)temp_kan,(char*)temp_bp,len);
         if(kan_index[index]->jukugo > 1 && temp_bp != NULL && !kanji_cmp(kan_index[index+1]->oya,temp_bp)){
             num_juku = find_double_rengo(juku, index, temp_kan);
-            if(num_juku == 0) return 1;
+            if(num_juku == 0) {return 1;
+            }
+            else{
+                if(temp_juku_flag_index < 0 && index - 1 > -1 && kan_index[index-1]->jukugo > kan_index[index]->jukugo)
+                    return 50;
+                if(count_jukugo_moji(kun)< kan_index[index]->jukugo)
+                    return 50;
+                
+            }
         }
         temp_list = identify_kanlist(temp_kan, find_hendoku_moji());
         if(temp_list != NULL && (temp_list->attrib == EXIST || temp_list->attrib == MEISI)){
@@ -1485,11 +1505,20 @@ int     duplicate_case( int index, int kun_jun, unsigned char* kun_p)
     loop_error = 0;
     dup_result = is_exhausted_dup_kan(index);
     moji_c = count_moji(kun_p,kan_index[index]->oya);
-    if(dup_result == 0) return index;
+    if(dup_result == 0)
+    {   temp_juku_flag_index = -1;
+        return index;
+    }
     while( ret > -1 && loop_error < 5){
         ret = duplicated_kan(temp_index, kun_jun, kun_p);
         if(ret == 0 ) {
             kan_index[temp_index]->gtest = 2;
+            if(kan_index[temp_index]->jukugo > 1 && kan_index[temp_index + 1]!= NULL){
+                temp_juku_flag_index = temp_index + 1;
+            }
+            else{
+                temp_juku_flag_index = -1;
+            }
             return temp_index;
         }
         if(non_done > 3 && ret != -1 && kan_index[temp_index]->gtest == 1){
@@ -1832,6 +1861,9 @@ hantei:    ret = hendoku_property_identify( kan_2,okuri2,bp);
         if(kan_1 < kan_2) {
             return 0;
         }
+        if(!is_rentai(temp_okuri1)) return 1;
+        if(!b3_strrcmp(temp_okuri1,(unsigned char*)"ノ")) return 1;
+        if(!b3_strrcmp(temp_okuri1,(unsigned char*)"ガ")) return 1;
         if(del_kana_posteria_list(temp_okuri1,3)) goto hantei;
     }
     if( kan_1 > kan_2 ){
@@ -4185,7 +4217,7 @@ int find_juku_pair(pair juku_pair[], int start, int end)
 int relocation_jukugo(pair jukugo_pair,pair dist_pair,int start)
 {
     unsigned char temp_kan[5][5];
-    int           kan_i,temp_i,i,length,temp_s;
+    int           kan_i,temp_i,i,j,length,temp_s;
     length = jukugo_pair.post - jukugo_pair.pre;
     temp_s = start;
     kan_i = 0;
@@ -4198,7 +4230,7 @@ int relocation_jukugo(pair jukugo_pair,pair dist_pair,int start)
     }
     while(temp_i > -1 && kan_index[temp_i] != NULL){
         temp_i = find_rengo(temp_kan[0], temp_kan[1], temp_s, 1);
-        if(temp_i < 0) return temp_i;
+        if(temp_i < 0) break;
         i = 1;
         if(length == 1) break;
         while(i < length){
@@ -4211,9 +4243,9 @@ int relocation_jukugo(pair jukugo_pair,pair dist_pair,int start)
     if(temp_i > -1 && i == length){
         dist_pair.pre = temp_i;
         dist_pair.post = temp_i + i;
-        for(i=0;i <= length;i++){
-            if(kan_index[temp_i+i]==NULL)return -1;
-            kan_index[dist_pair.pre+i]->jukugo = kan_index[jukugo_pair.pre+i]->jukugo;
+        for(j=0;j <= length;j++){
+            if(kan_index[temp_i+j]==NULL)return -1;
+            kan_index[temp_i+j]->jukugo = kan_index[jukugo_pair.pre+j]->jukugo;
         }
         return 0;
     }
@@ -4233,6 +4265,64 @@ int    clear_jukugo(pair jukugo_pair)
     return 0;
 }
 /*
+ int    number_of_marked(int start, int end, int mode)はstartからendの範囲のkan_index上の文字が、jukugo,jufuku,kun_junについていくつマークされているかを数える。返り値はいくつあるかという数。当然0ならば、その範囲にマークされている文字はないということ。modeは上記の順に、1,2,3を指定する。それ以外の数では何も数えないので戻り値は0となる。
+ */
+int    number_of_marked(int start, int end, int mode)
+{
+    int         i = 0;
+    int     count = 0;
+    end = end + 1;
+    while(kan_index[start+i]!= NULL && start+i < end)
+    {
+        switch(mode){
+            case 1: if(kan_index[start+i]->jukugo > 0) count++;
+                break;
+            case 2: if(kan_index[start+i]->jufuku > 0) count++;
+                break;
+            case 3: if(kan_index[start+i]->kun_jun > 0) count++;
+                break;
+            default: break;
+        }
+        i++;
+    }
+    return count;
+}
+/*
+ count_jukugo_moji(unsigned char* kun)訓読文を読み取って表面上の熟語の文字の文字数を数える。
+ */
+int count_jukugo_moji(unsigned char* kun)
+{
+    unsigned char*  temp_kun;
+    unsigned char*  temp_kun2;
+    int             count, ret, temp_i;
+    count = 1;
+    temp_kun = kun;
+    ret = is_utf_kanji(temp_kun);
+    if(ret == 0){
+        temp_kun = next_kanji(temp_kun);
+        ret = is_utf_kanji(temp_kun);
+    }
+    temp_kun2 = del_kanji(temp_kun);
+    if(temp_kun2 == NULL) return count;
+    temp_kun2 = skip_yomi(temp_kun2);
+    ret = is_utf_kanji(temp_kun2);
+    temp_i = find_rengo(temp_kun,temp_kun2,0,0);
+    count++;
+    temp_kun = temp_kun2;
+    while(ret > 2){
+        temp_kun2 = del_kanji(temp_kun);
+        if(temp_kun2 == NULL) break;
+        temp_kun2 = skip_yomi(temp_kun2);
+        ret = is_utf_kanji(temp_kun2);
+        if(ret < 3) continue;
+        temp_i = find_rengo(temp_kun,temp_kun2,temp_i,0);
+        if(temp_i < 0) break;
+        temp_kun = temp_kun2;
+        count++;
+    }
+    return count;
+}
+/*
  熟語と思われる漢字にマークをつける。引数kunは書き下し文へのポインタ。返り値は、熟語と思われるものの数。
  */
 int mark_jukugo( unsigned char* kun )
@@ -4240,13 +4330,13 @@ int mark_jukugo( unsigned char* kun )
     unsigned char   *temp_kun_i;
     unsigned char   *temp_kun;
     unsigned char   temp_okuri[31];
-    unsigned char   t_kan[10][5];
+    unsigned char   t_kan[15][5];
     kanlist*        temp_list;
     pair            juku_pair[4];
     pair            relocated_pair[4];
     int     temp_i,temp_i_s,temp_i_lim,ret,k_code,juku_count,temp_juku,i,j;
     int     temp_j,temp_j_s, ret_i, ret_j,length_max_j;
-    int     juku_flag,kan_i,read_kan_i,length_max,mode;
+    int     juku_flag,kan_i,read_kan_i,length_max,mode, first_time;
     temp_kun = kun;
     kan_i = 0;
     juku_flag = 0;
@@ -4256,6 +4346,7 @@ int mark_jukugo( unsigned char* kun )
         if(k_code == 0){
             if(juku_flag > 1){
                 mode = 1;
+                first_time = 1;
                 ret  = 0;
                 length_max = 0;
                 temp_i_s = 0;
@@ -4276,8 +4367,9 @@ int mark_jukugo( unsigned char* kun )
                        // juku_count++;
                         break;
                     }
-                    if(read_kan_i == 0 && mode == 1){
+                    if(first_time && read_kan_i == 0 && mode == 1){
                         temp_i_s = temp_i;
+                        first_time = 0;
                     }
                     read_kan_i++;
                     temp_i_lim = temp_i;
@@ -4293,14 +4385,14 @@ int mark_jukugo( unsigned char* kun )
                             read_kan_i++;
                         }
                         else{
-                            if(ret_i < 1) {
-                                read_kan_i = 0;
+                           // if(ret_i < 2) {//
                                 if(length_max - 2 < read_kan_i){
-                                    length_max = read_kan_i + 2;
+                                    length_max = read_kan_i + 1;
                                     temp_i_s = temp_i;//A
                                 }
+                                read_kan_i = 0;
                                 break;
-                            }
+                           // }
                         }
                     }
                     if(ret == 1) break;
@@ -4326,8 +4418,13 @@ int mark_jukugo( unsigned char* kun )
                     mode = 0;
                     temp_j_s = -1;
                     length_max_j = 0;
-                    while(temp_j < temp_i_lim){
+                    while(kan_index[temp_j]!= NULL && temp_j <= temp_i_lim){
                         temp_j = find_rengo(t_kan[read_kan_i],t_kan[read_kan_i + 1],temp_j,mode);
+                        if(temp_j < 0) break;
+                        if(number_of_marked(temp_j, temp_j+juku_flag -1, 1) == 0){
+                            temp_j++;
+                            continue;
+                        }
                         if(temp_j > -1){
                             read_kan_i++;
                             j = 1;
@@ -4348,7 +4445,7 @@ int mark_jukugo( unsigned char* kun )
                     }
                     if(length_max_j>length_max){
                         ret_j = 0;
-                        temp_juku = find_juku_pair(juku_pair,temp_j_s,temp_j_s+length_max_j-1);
+                        temp_juku = find_juku_pair(juku_pair,temp_j_s,temp_j_s+length_max_j);
                         for(i=0;i<temp_juku;i++){
                             ret_j = relocation_jukugo(juku_pair[i],relocated_pair[i],temp_j_s + length_max_j +1);
                             if(ret_j != 0)break;
@@ -4364,7 +4461,7 @@ int mark_jukugo( unsigned char* kun )
                         }
                     }
                 }//
-                if(ret > -1){
+                if(ret > -1 || length_max > 0){
                     for(i=0;i<length_max;i++)
                     {
                         kan_index[temp_i_s+i]->jukugo = length_max-i;
@@ -4423,7 +4520,12 @@ int     assign_kan_index( unsigned char* kun_ori )
         kun = next_kanji(kun);
         if(kun == NULL || *kun == '\0') break;
         code = is_utf_kanji(kun);
-        temp_index = find_kan( kun );
+        if(temp_juku_flag_index > -1 && kan_index[temp_juku_flag_index]!= NULL &&!kanji_cmp(kan_index[temp_juku_flag_index]->oya,kun)){
+            temp_index = temp_juku_flag_index;
+        }
+        else{
+            temp_index = find_kan( kun );//
+        }
         if(kun != NULL && temp_index < 0){
             write_error_kun(kun);
             if(read_kuten_error()){
@@ -4621,25 +4723,31 @@ int force_swapping(int chofuku,int error, int pre_error)
  */
 int     process_kan(unsigned char* kun )
 {
-    int ret, normal, count,f_chofuku,temp_chofuku,jukugo;
+    int ret, count,temp_chofuku,jukugo,first_time;
+    static int normal, f_chofuku;
     non_done = 0;
     hogo_rev = 1;
     basic_error = 0;
     error_count = 0;
     temp_error_point = -1;
+    first_time = 1;
 start:
     ret = 0;
     err_count = 0;
     count = 0;
-    if(chofuku_n > 4){
-        temp_chofuku = 4;
+    temp_juku_flag_index = -1;
+    if(first_time){
+        if(chofuku_n > 4){
+            temp_chofuku = 4;
+        }
+        else{
+            temp_chofuku = chofuku_n;
+        }
+        normal = normalize_kun(kun);
+        f_chofuku = factorial(temp_chofuku-1);
+        jukugo = mark_jukugo(kun);
+        first_time = 0;
     }
-    else{
-        temp_chofuku = chofuku_n;
-    }
-    normal = normalize_kun(kun);
-    f_chofuku = factorial(temp_chofuku-1);
-    jukugo = mark_jukugo(kun);
     while(err_count < f_chofuku)
     {
         if(basic_error > 50000){

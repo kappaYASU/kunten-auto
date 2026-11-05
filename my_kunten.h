@@ -87,5 +87,6 @@ const char mode_char[26] = {"fpkontmlLhHWw=0123456789."};
 unsigned char   kana_temp_char[4];
 oyakan*         kan_index[MAX_MOJI];
 kaeriten*       kaeri_index[MAX_MOJI];
+int             temp_juku_flag_index;
 
 #endif /* my_kunten_h */
