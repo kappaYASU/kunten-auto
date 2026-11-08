@@ -5,16 +5,17 @@
   {Range="0080-"FFFF, Font=IPAexMincho},
 }]{HanaMinA}
 %\usepackage[deluxe, yu-win]{luatexja-preset}
-\usepackage{luakanbun2ex}
+\usepackage{luakanbun4ex}
 \usepackage{graphicx}
 \usepackage{multicol}%OK
-\usepackage{luantkokugo}%OK
+%\usepackage{luantkokugo}%OK
 \usepackage{luatuline--}%OK
 \usepackage{luatexja-ruby}%\usepackage{pxrubrica}
 \usepackage{setspace}
 \pagestyle{empty}
 \topmargin -.5in
 \oddsidemargin -.3in
+\def\katatuki#1{\raisebox{.5ex}{\small #1}}
 \setlength{\textwidth}{60\zw}
 \setlength{\textheight}{45\zw}
 
