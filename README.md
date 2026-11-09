@@ -46,5 +46,5 @@ gcc -o kunten kunten_main.o kunten.o utf_string.o my_math.o tex_command.o
 
 若干のバグ（否定辞、助動詞の読み）をフィックスした。(2026/9/30)
 
-
+熟語を措定するルーチンとそれを利用した語順の判定ルーチンを加えて変換精度をあげた。（2026/11/9)
 
