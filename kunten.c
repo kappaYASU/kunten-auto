@@ -4334,17 +4334,30 @@ int mark_jukugo( unsigned char* kun )
     kanlist*        temp_list;
     pair            juku_pair[4];
     pair            relocated_pair[4];
-    int     temp_i,temp_i_s,temp_i_lim,ret,k_code,juku_count,temp_juku,i,j;
+    int     temp_i,temp_i_s,temp_i_lim,ret,k_code,juku_count,temp_juku,i,j,k;
     int     temp_j,temp_j_s, ret_i, ret_j,length_max_j;
     int     juku_flag,kan_i,read_kan_i,length_max,mode, first_time;
     temp_kun = kun;
     kan_i = 0;
     juku_flag = 0;
     juku_count = 0;
+    for(k=0;k<15;k++)t_kan[k][0] = '\0';
     while(*temp_kun != '\0'){
         k_code = is_utf_kanji(temp_kun);
         if(k_code == 0){
             if(juku_flag > 1){
+                if(juku_flag == 2){
+                    temp_list = identify_kanlist(t_kan[1], find_hendoku_moji());
+                    if(temp_list != NULL){
+                        if(temp_list->attrib == EXIST || temp_list->attrib == MEISI){
+                            get_okuri(temp_kun, temp_okuri);
+                            if(!kanlist_confirm(temp_list, temp_okuri, 2)){
+                                juku_flag = 1;
+                                ret = 1;
+                            }
+                        }
+                    }
+                }
                 mode = 1;
                 first_time = 1;
                 ret  = 0;
@@ -4420,7 +4433,10 @@ int mark_jukugo( unsigned char* kun )
                     length_max_j = 0;
                     while(kan_index[temp_j]!= NULL && temp_j <= temp_i_lim){
                         temp_j = find_rengo(t_kan[read_kan_i],t_kan[read_kan_i + 1],temp_j,mode);
-                        if(temp_j < 0) break;
+                        if(temp_j < 0) {
+                            for(k=0;k<15;k++)t_kan[k][0] = '\0';
+                            break;
+                        }
                         if(number_of_marked(temp_j, temp_j+juku_flag -1, 1) == 0){
                             temp_j++;
                             continue;
@@ -4469,6 +4485,7 @@ int mark_jukugo( unsigned char* kun )
                     juku_count++;
                 }
             }
+            for(k=0;k<15;k++)t_kan[k][0] = '\0';
             juku_flag = 0;
             kan_i = 0;
             temp_kun = next_kanji( temp_kun );
@@ -4637,6 +4654,13 @@ int     assign_kan_index( unsigned char* kun_ori )
         temp_jun++;
         kun = kun + code;
         kun = kun_kana(kun, temp_index);
+        if(kan_index[temp_index]->jukugo > 1){
+            temp_juku_flag_index = temp_index + 1;
+        }
+        else{
+            temp_juku_flag_index = -1;
+        }
+        //insert
     }
     if(ori_hogo_rev > 0){
         hogo_rev = ori_hogo_rev;
