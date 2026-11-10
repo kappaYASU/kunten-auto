@@ -4115,15 +4115,18 @@ int     kanji_count(int  index)
     }
     return count;
 }
-// gtestの値が95から999変わった感じを探す。そこに問題があると思われる。
+// gtestの値が95から999変わった漢字を探す。そこに問題があると思われる。
 int     find_problem(void)
 {
     int temp_i = 0;
     int temp_gtest = 0;
-    temp_gtest = kan_index[temp_i]->gtest_first;
     while(kan_index[temp_i] != NULL)
     {
+        temp_gtest = kan_index[temp_i]->gtest_first;
         if(kan_index[temp_i]->gtest == 999){
+            if(temp_gtest == -95 || temp_gtest == -93 || temp_gtest == -92) return temp_i;
+        }
+        if(kan_index[temp_i]->gtest == -93){
             if(temp_gtest == -95 || temp_gtest == -93 || temp_gtest == -92) return temp_i;
         }
         temp_i++;
@@ -4345,8 +4348,8 @@ int mark_jukugo( unsigned char* kun )
     while(*temp_kun != '\0'){
         k_code = is_utf_kanji(temp_kun);
         if(k_code == 0){
-            if(juku_flag > 1){
-                if(juku_flag == 2){
+    again:if(juku_flag > 1){
+              if(juku_flag == 2){
                     temp_list = identify_kanlist(t_kan[1], find_hendoku_moji());
                     if(temp_list != NULL){
                         if(temp_list->attrib == EXIST || temp_list->attrib == MEISI){
@@ -4483,6 +4486,11 @@ int mark_jukugo( unsigned char* kun )
                         kan_index[temp_i_s+i]->jukugo = length_max-i;
                     }
                     juku_count++;
+                    juku_flag = juku_flag - length_max;
+                    if(juku_flag > 1){
+                        for(i=0;i<juku_flag;i++)strcpy((char*)t_kan[i],(char*)t_kan[length_max+i]);
+                        goto again;
+                    }
                 }
             }
             for(k=0;k<15;k++)t_kan[k][0] = '\0';
@@ -4639,7 +4647,7 @@ int     assign_kan_index( unsigned char* kun_ori )
                }
            }
            else{
-               if(kan_index[temp_index]->gtest_first < -90 && kan_index[temp_index]->gtest_first > -95 )
+               if(kan_index[temp_index]->gtest_first < -90 && kan_index[temp_index]->gtest_first > -95 && kan_index[temp_index]->jufuku > 0)
                {    kan_index[temp_index]->gtest = 10001;
                     kan_index[temp_index]->gtest_first = 0;
                    temp_error_point = temp_index;
