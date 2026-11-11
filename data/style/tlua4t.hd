@@ -8,7 +8,7 @@
 \usepackage{luakanbun4ex}
 \usepackage{graphicx}
 \usepackage{multicol}%OK
-%\usepackage{luantkokugo}%OK
+\usepackage{luntkokugo}%OK
 \usepackage{luatuline--}%OK
 \usepackage{luatexja-ruby}%\usepackage{pxrubrica}
 \usepackage{setspace}
