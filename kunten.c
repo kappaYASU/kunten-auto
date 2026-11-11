@@ -1725,6 +1725,9 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
                         }
                     }
                 }
+                else{
+                    final = 0;
+                }
                 free(temp_kan);
                 break; //return final;
             default:
@@ -4516,7 +4519,7 @@ int mark_jukugo( unsigned char* kun )
 int     assign_kan_index( unsigned char* kun_ori )
 {
     int     errors, error_jun, temp_index, ret_index, temp_jun, code,i;
-    int     ori_hogo_rev, penalty;
+    int     ori_hogo_rev, penalty,error_flag;
     int     debug_ret;
     int     e_num, k_index, g_index;
     int     kanji_ban;
@@ -4683,7 +4686,7 @@ int     assign_kan_index( unsigned char* kun_ori )
             debug_ret = 0;
             while(error_jun != 0 && debug_ret < 3){
                 printf("Error %d\n", error_jun);
-                erronious_point_in_kunjun();
+                error_flag = erronious_point_in_kunjun();
                 swap = swap_pair_return();
                 if(read_verbose() > 0){
                     print_dubious_kaeri();
@@ -4697,7 +4700,7 @@ int     assign_kan_index( unsigned char* kun_ori )
                 wd_print(swap->pre);
                 wc_print(番を逆にします\n);
                 printf("読み方の順が理論的にあり得ない順となっています。\n");
-            //printf("このままでは、返点が打てないので、漢字%sの%d番と%d番を逆にします。\n",kan_index[swap->post]->oya, swap->post, swap->pre);
+ //               printf("このままでは、返点が打てないので、漢字%sの%d番と%d番を逆にします。\n",kan_index[swap->post]->oya, swap->post, swap->pre);
                 swap_kan_index(swap->post, swap->pre);
                 error_jun = check_kunjun();
                 debug_ret++;

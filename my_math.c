@@ -282,7 +282,7 @@ int     judge_kunjun(pair temp_kaeri)
 }
 /*
  別のやり方による訓順のチェック ただし、この場合は、jun
- */
+ 
 int     judge_kunjun_2nd( int max)
 {
     int     mark, mark2, index,temp_pre_1, temp_pre_2, temp_post_1, temp_post_2, temp_index, ret;
@@ -334,7 +334,7 @@ int     judge_kunjun_2nd( int max)
         index++;
     }
     return ret;
-}
+}*/
 /*
  mid_identifyは、問題となるpointがpreとpostの間にあるかどうかを判定する。postとpreはどちらが大きくても良い。
  間にあれば０、前にはみ出していれば１、後にはみ出していれば２を返す。
@@ -417,10 +417,12 @@ int     over_lapping_area( pair p1, pair p2)
  */
 int     check_kunjun(void)
 {
-    int     index, max,kaeri_num,i,ret,ret2;
+    int     index, max,kaeri_num,i,ret;
     index = 0;
     max = init_list_jun();
     kaeri_num = 0;
+    ret = 0;
+ //   ret2 = 0;
     dubious_kaeri.pre = -1;
     dubious_kaeri.post = -1;
     dubious_kaeri_num = -1;
@@ -463,11 +465,11 @@ int     check_kunjun(void)
         }
         i++;
     }
-   ret2 = judge_kunjun_2nd(max);
-    if(read_verbose() > 0){
-        printf("judge_kunjun = %d; judge_kunjun_2nd = %d\n", ret, ret2);
-    }
-    return ret + ret2;
+//    ret2 = judge_kunjun_2nd(max);
+//    if(read_verbose() > 0){
+//        printf("judge_kunjun = %d; judge_kunjun_2nd = %d\n", ret, ret2);
+//    }
+    return ret;// + ret2;
 }
 /*
  
