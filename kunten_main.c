@@ -1399,7 +1399,6 @@ int main( int argc, char *argv[] )
     temp_end = 0;
     while(get_file_end_flag() == 0)
     {
-        
         kan_start = read_buf_kan(haku_file,tex_file);
         //if(kan_start == NULL) continue;
         if(kan_start != NULL ){

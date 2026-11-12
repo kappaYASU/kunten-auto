@@ -189,6 +189,10 @@ int    init_list_jun( void )
         }
         temp_index++;
     }
+//    for(i=0;i<list_length+2;i++)
+//    {
+//        printf("No.%d: ori_num=%02d; kaeri_num=%02d; kun_jun=%02d; pair.pre=%02d; pair_post=%02d; check=%09ld \n ",i,list_jun[i].ori_num,list_jun[i].kaeri_num,list_jun[i].kun_jun_num,list_jun[i].kun_jun_pair.pre,list_jun[i].kun_jun_pair.post,list_jun[i].check);
+//    }
     return list_length;
 }
 /*
@@ -282,7 +286,7 @@ int     judge_kunjun(pair temp_kaeri)
 }
 /*
  別のやり方による訓順のチェック ただし、この場合は、jun
- 
+*/
 int     judge_kunjun_2nd( int max)
 {
     int     mark, mark2, index,temp_pre_1, temp_pre_2, temp_post_1, temp_post_2, temp_index, ret;
@@ -334,7 +338,7 @@ int     judge_kunjun_2nd( int max)
         index++;
     }
     return ret;
-}*/
+}
 /*
  mid_identifyは、問題となるpointがpreとpostの間にあるかどうかを判定する。postとpreはどちらが大きくても良い。
  間にあれば０、前にはみ出していれば１、後にはみ出していれば２を返す。
@@ -417,12 +421,12 @@ int     over_lapping_area( pair p1, pair p2)
  */
 int     check_kunjun(void)
 {
-    int     index, max,kaeri_num,i,ret;
+    int     index, max,kaeri_num,i,ret,ret2;
     index = 0;
     max = init_list_jun();
     kaeri_num = 0;
     ret = 0;
- //   ret2 = 0;
+    ret2 = 0;
     dubious_kaeri.pre = -1;
     dubious_kaeri.post = -1;
     dubious_kaeri_num = -1;
@@ -465,11 +469,16 @@ int     check_kunjun(void)
         }
         i++;
     }
-//    ret2 = judge_kunjun_2nd(max);
+    ret2 = judge_kunjun_2nd(max);
 //    if(read_verbose() > 0){
 //        printf("judge_kunjun = %d; judge_kunjun_2nd = %d\n", ret, ret2);
 //    }
-    return ret;// + ret2;
+//    printf("max = %02d\n",max);
+//    for(i=0;i<max;i++)
+//    {
+//        printf("each_kaeri_pairs:pre=%02d;post=%02d;jun=%d\n",each_kaeri_pairs[i].pre,each_kaeri_pairs[i].post,each_kaeri_pairs[i].jun);
+//    }
+    return ret + ret2;
 }
 /*
  

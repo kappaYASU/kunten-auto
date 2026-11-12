@@ -2268,6 +2268,8 @@ void    index_init( void )
 {
     int i;
     for(i=0;i < MAX_MOJI;i++){
+        if(kan_index[i]!=NULL) free(kan_index[i]);
+        if(kaeri_index[i]!=NULL) free(kaeri_index[i]);
         kan_index[i] = NULL;
         kaeri_index[i] = NULL;
     }
@@ -3756,6 +3758,16 @@ unsigned char* read_buf_kan( FILE* i_file, FILE* o_file)
                         strcpy((char*)temp_char_kan,"{");
                         return bp_s;
                     }
+                    break;
+                case '.':
+                    ku_flag = 1;
+                    strncpy((char*)bp_e, (char*)temp,1);
+                    temp_char_kan[0] = '\0';
+                    bp_e = bp_e + 1;
+                    if(kakko_u == 0){
+                        goto end;
+                    }
+                    continue;
                 default: break;
             }
             *bp_e = temp_ascii;
@@ -3780,6 +3792,10 @@ unsigned char* read_buf_kan( FILE* i_file, FILE* o_file)
             strncpy((char*)bp_e, (char*)temp,3);
             temp_char_kan[0] = '\0';
             bp_e = bp_e + 3;
+            if(kakko_u < 0) {
+                printf("括弧の付け方がおかしい\n");
+                kakko_u = 0;
+            }
             if(kakko_u == 0 && ku_flag == 1){
                 break;
             }
@@ -3815,8 +3831,11 @@ unsigned char* read_buf_kan( FILE* i_file, FILE* o_file)
         }
     }
 end:    if(kan_num == 0) return 0;
-        bp_e = ending_process(i_file, bp_e);
-        if(bp_e == NULL) return NULL;
+    bp_e = ending_process(i_file, bp_e,temp_char_kan,cont_flag);
+    if(bp_e == NULL) return NULL;
+    if(cont_flag == 0){
+        cont_flag = one_character(temp_char_kan[0]);
+    }
         return bp_s;
 }
 /*
@@ -3881,6 +3900,12 @@ unsigned char* read_buf_kun( FILE* i_file)
                     *bp_e = temp_ascii;
                     bp_e++;
                     break;
+                case '.':
+                    if(!kakko_kun_u) goto end;
+                    if(end_kakko_flag) goto end;
+                    //*bp_e = temp_ascii;
+                    //bp_e++;
+                    ku_flag = 1;
                 default:
                     break;
             }
@@ -3983,7 +4008,7 @@ unsigned char* read_buf_kun( FILE* i_file)
             continue;
             }
         }
-        if(flag == 13){
+        if(flag == 13){//句点の処理
             //strncpy((char*)bp_e, (char*)temp,3);
             temp_char_kun[0] = '\0';
             //bp_e = bp_e + 3;
@@ -4490,7 +4515,7 @@ int mark_jukugo( unsigned char* kun )
                     }
                     juku_count++;
                     juku_flag = juku_flag - length_max;
-                    if(juku_flag > 1){
+                    if(length_max > 0 && juku_flag > 1){
                         for(i=0;i<juku_flag;i++)strcpy((char*)t_kan[i],(char*)t_kan[length_max+i]);
                         goto again;
                     }
@@ -4679,6 +4704,7 @@ int     assign_kan_index( unsigned char* kun_ori )
     write_kuten_error(haku_kuten_error());
     if(chofuku_n > 1) {
         if(!errors){
+//            printf("Sentence: %s\n",kun_ori); 
             error_jun = check_kunjun();
             if(read_verbose() > 0){
                 printf("Is the order of kanji-reading possible from the point of assignment of kaeriten? \n'0' is OK, '1' is impossible. In this case %d \n", error_jun);
@@ -4803,7 +4829,7 @@ start:
                 wv_print(read_temp_error_kun());
                 wc_print(\n);
                 printf("訓読文は以下の通りです。\n");
-                printf("%s\n",read_temp_error_kun());
+                printf("%s\n",kun);
             }
             else{
                 caution(read_temp_error_str(),(unsigned char*)"\nという白文に句点が一致していないか\n訓読文と白文で違う漢字が使われている可能性があります\n");

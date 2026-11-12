@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "oyakan.h"
+#include "utfstring.h"
 
 #define S_KANJI_E   {0xF0,0x9F,0xAF,0xBF,'\0'}
 #define E_KANJI_E   {0xF0,0xB1,0x8D,0x8B,'\0'}
@@ -68,6 +69,7 @@ unsigned char* read_temp_error_kun( void )
  */
 int one_character(unsigned char str)
 {
+    if(str == 0x00)return 0;
     if(str < 0x80) return 1;
     if(str < 0xE0) return 2;
     if(str < 0xF0) return 3;
@@ -162,19 +164,39 @@ char* strrtok(char* str, char k)
  ending_processは、FILE streemからascii文字を読み取ってbufに移す。もしascii文字でなければ、
  FILEに押し戻す。戻り値は移した後のbufへのポインタ
  */
-unsigned char* ending_process(FILE* i_file, unsigned char* buf)
+unsigned char* ending_process(FILE* i_file, unsigned char* buf,unsigned char* con_buf, int con_flag)
 {
-    int     lit, ret;
-    while((lit = getc(i_file)) != EOF && one_character((unsigned char)lit) == 1){
-        if(strchr(ending_chars, lit) == NULL) break;
-        *buf = (unsigned char)lit;
-        buf++;
+    int     ret;
+    unsigned char  end_temp[5];
+    if(con_flag == 0){
+        while(get_one_char(i_file,end_temp)!= NULL){
+            ret = is_utf_char(end_temp);
+            if(ret == 17 || ret == 0 || ret == 11 || ret == 13){
+                strncpy((char*)buf, (char*)end_temp,3);
+                buf = buf + 3;
+                continue;
+            }
+            else{
+                if(ret == 1){
+                    if(strchr(ending_chars, end_temp[0]) == NULL){
+                        ret = ungetc(end_temp[0], i_file);
+                        if(ret == EOF){
+                            write_file_end_flag(1);
+                        }
+                        break;}
+                    *buf = (unsigned char)end_temp[0];
+                    buf++;
+                    continue;
+                }
+                else{
+                 //   con_flag = one_character(end_temp[0]);
+                    strcpy((char*)con_buf,(char*)end_temp);
+                    break;
+                }
+            }
+        }
     }
     *buf = '\0';
-    ret = ungetc(lit, i_file);
-    if(ret == EOF){
-        write_file_end_flag(1);
-    }
     return buf;
 }
 /*

@@ -47,7 +47,7 @@ int     del_kana_posteria_list( unsigned char* kana_1, int max);
 int     b3_strcmp_out_yaku(unsigned char* s1, unsigned char* s2, int mode);
 void    init_buf( unsigned char* buf,int max);
 char*   strstrchr(char* s1, char* s2);
-unsigned char* ending_process(FILE* i_file, unsigned char* buf);
+unsigned char* ending_process(FILE* i_file, unsigned char* buf,unsigned char* con_buf, int con_flag);
 unsigned char* kanindex_to_str(int start, int end);
 unsigned char* read_temp_error_str(void);
 void            write_error_kun( unsigned char* s);
