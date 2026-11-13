@@ -7,7 +7,11 @@
 #ifndef kunten_h
 #define kunten_h
 
-#undef  WINDOWS
+#if defined(WINDOWSENV)
+    #define WINDOWS
+#else
+    #undef  WINDOWS
+#endif
 #undef  DEBUG
 //#define DEBUG_3
 
