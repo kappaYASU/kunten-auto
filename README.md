@@ -48,3 +48,5 @@ gcc -o kunten kunten_main.o kunten.o utf_string.o my_math.o tex_command.o
 
 熟語を措定するルーチンとそれを利用した語順の判定ルーチンを加えて変換精度をあげた。（2026/11/9)
 
+新たにMakefileを入れた。make命令で環境に応じたコンパイルができる。compile.shは使う必要がなくなった。(2026/11/13)
+
