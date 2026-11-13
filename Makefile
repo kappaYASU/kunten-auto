@@ -19,6 +19,12 @@ else
 endif
 
 # 3. コンパイル・リンクオプション
+CPPFLAGS ?=
+
+# CCにmingwが含まれている場合はWindows環境と判定
+ifneq ($(findstring mingw,$(CC)),)
+    CPPFLAGS += -DWINDOWSENV
+endif
 # -MMD -MP により、ヘッダーファイルの依存関係（.d）を自動生成・追跡します
 CFLAGS  = -Wall -Wextra -O2 -MMD -MP
 % 上記では警告メッセージ多数表示されるが make CFLAGS='-O2 -MMD -MP' とすると当座の警告は非表示
