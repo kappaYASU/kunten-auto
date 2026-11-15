@@ -3833,7 +3833,9 @@ unsigned char* read_buf_kan( FILE* i_file, FILE* o_file)
 end:    if(kan_num == 0) return 0;
     bp_e = ending_process(i_file, bp_e,temp_char_kan,cont_flag);
     if(bp_e == NULL) return NULL;
-    if(cont_flag == 0){
+    if(temp_char_kan[0] == '>'){kan_haku_flag = 0;}
+    if(cont_flag == 0)
+    {
         cont_flag = one_character(temp_char_kan[0]);
     }
         return bp_s;

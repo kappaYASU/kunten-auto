@@ -167,6 +167,7 @@ char* strrtok(char* str, char k)
 unsigned char* ending_process(FILE* i_file, unsigned char* buf,unsigned char* con_buf, int con_flag)
 {
     int     ret;
+    unsigned char   temp_char;
     unsigned char  end_temp[5];
     if(con_flag == 0){
         while(get_one_char(i_file,end_temp)!= NULL){
@@ -189,7 +190,11 @@ unsigned char* ending_process(FILE* i_file, unsigned char* buf,unsigned char* co
                     continue;
                 }
                 else{
-                 //   con_flag = one_character(end_temp[0]);
+                    if(ret == 5){
+                        temp_char = b3_to_ascii(end_temp);
+                        end_temp[0] = temp_char;
+                        end_temp[1] = '\0';
+                    }
                     strcpy((char*)con_buf,(char*)end_temp);
                     break;
                 }
