@@ -27,7 +27,7 @@ ifneq ($(findstring mingw,$(CC)),)
 endif
 # -MMD -MP により、ヘッダーファイルの依存関係（.d）を自動生成・追跡します
 CFLAGS  = -Wall -Wextra -O2 -MMD -MP
-% 上記では警告メッセージ多数表示されるが make CFLAGS='-O2 -MMD -MP' とすると当座の警告は非表示
+# 上記では警告メッセージ多数表示されるが make CFLAGS='-O2 -MMD -MP' とすると当座の警告は非表示
 LDFLAGS =
 # もし my_math.c 等で <math.h> の関数を使っていてリンクエラーが出る場合は下のコメントを外してください
 # LDFLAGS += -lm
