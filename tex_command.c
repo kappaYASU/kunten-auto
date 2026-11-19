@@ -272,7 +272,7 @@ char* env_close(con_seq* con_t, int res)
 int    read_kan_com( char* dir )
 {
     FILE* i_file;
-    int     result, ret_n, read_flag, pp;
+    int     result, ret_n, read_flag;
     char    con_dir[128];
     unsigned char    line[MAX_LINE];
     unsigned char*   line_bp;
@@ -291,7 +291,7 @@ int    read_kan_com( char* dir )
     }
     result = 0;
     read_flag = 1;
-    pp = 0;
+    //pp = 0;
     init_buf(line,MAX_LINE);
     line_bp = line;
     while((signed char)(lit = getc(i_file)) != EOF){
@@ -349,7 +349,7 @@ int    read_kan_com( char* dir )
 int    read_mon_com( char* dir )
 {
     FILE* i_file;
-    int     result, ret_n, read_flag, pp,temp_int;
+    int     result, ret_n, read_flag, temp_int;
     char    con_dir[128];
     unsigned char    line[MAX_LINE];
     unsigned char*   line_bp;
@@ -366,7 +366,7 @@ int    read_mon_com( char* dir )
     }
     result = 0;
     read_flag = 1;
-    pp = 0;
+   // pp = 0;
     init_buf(line,MAX_LINE);
     line_bp = line;
     while((signed char)(lit = getc(i_file)) != EOF){

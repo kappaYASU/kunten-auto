@@ -1227,7 +1227,7 @@ int main( int argc, char *argv[] )
     int     kan_possible;
     unsigned char* kan_start = NULL;
     unsigned char* kun_start = NULL;
-    oyakan*     read_haku;
+    //oyakan*     read_haku;
     message();
     g_test = 0;
     verbose = 0;
@@ -1405,7 +1405,7 @@ int main( int argc, char *argv[] )
             if(kan_possible == 0) return 9;
             count_kan++;
             write_read_num(count_kan);
-            read_haku = set_kanji(kan_start);
+            set_kanji(kan_start);//read_haku = set_kanji(kan_start);
             kun_start = read_buf_kun(kun_file);
             ret = process_kan(kun_start);
             if(ret < 0) {

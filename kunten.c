@@ -399,7 +399,7 @@ int    is_dosi_conj(unsigned char* okuri)
 /*
  is_non_hendokuは、補語をとる動詞（ないしは動詞もどき）でないことを判定する関数（ただし、動詞であることを確定する関数ではない）。引数は、当該の漢字とその送り仮名。動詞でないと判定できれば０、そうでなければ１を返す。
  */
-int     is_non_hendoku(int index, unsigned char* okuri)
+int     is_non_hendoku(unsigned char* okuri)//(int index, unsigned char* okuri)
 {
     int     ret, i;
     if(strcmp((char*)okuri,(char*)"ガ") == 0) return 0;
@@ -539,7 +539,7 @@ int     post_joji( int  index)
 /* 「之」は、構造助字として使われ「ノ」と読むか、置き字となる。その場合、訓読文には漢字は現れない。したがって、
  「之」が構造助字かどうかを文脈から判定する。構造助字と判定されれば0、でなければ1、判定不能であれば2を返す。
  また、なんらかのエラーが生じれば、9を返す。*/
-int     is_kore_joji( int index, kanokuri* temp_kan_kore,int kun_jun )
+int     is_kore_joji( int index )
 {
     int     temp_kun_jun, temp_kun_jun_pre;
     int     temp_index, temp_index_pre, ret;
@@ -552,11 +552,6 @@ int     is_kore_joji( int index, kanokuri* temp_kan_kore,int kun_jun )
     if(temp_kun_jun_pre == 0) return 1;
     if(temp_kun_jun == 0) return 1;
     if(temp_kun_jun < temp_kun_jun_pre) return 1;
-//  The following four lines are hindering correct kutou.
-//    if(temp_kun_jun < kun_jun - 1) {
-//        kan_index[index]->kun_jun = -2;
-//        return 0;
-//    }//
     temp_index_pre = kunjun_around_index(index, temp_kun_jun, -1);
     temp_index = kunjun_around_index(index, temp_kun_jun_pre, 1);
     
@@ -591,7 +586,7 @@ hendoku_property_identifyは、kan_index上の漢字AとBが返読の関係に�
  */
 int hendoku_property_identify(int index, unsigned char* kana, unsigned char* bp)
 {
-    int             ret, t_index, ret_attrib;
+    int             ret, ret_attrib;
     long int        q;
     kanokuri*       temp_kanokuri;
     kanokuri_index* temp_kanokuri_index;
@@ -599,7 +594,7 @@ int hendoku_property_identify(int index, unsigned char* kana, unsigned char* bp)
     unsigned char*  temp_kana;
     q = kan_index[index]->prop;
     ret_attrib = 1;
-    t_index = index;
+ //   t_index = index;
     if(!is_tokoro( index )) return RENTAI;
     if(PID(q,HENDOKU) == 0){
         temp_list = (kanlist*)kan_index[index]->prop_p[1];
@@ -659,12 +654,12 @@ int hendoku_property_identify(int index, unsigned char* kana, unsigned char* bp)
  //       temp_bp = temp_buf_bp;
         temp_kanokuri_index = trace_juku(index, temp_kana);
         temp_kanokuri = temp_kanokuri_index->p_kanokuri;
-        ret = is_non_hendoku(t_index,temp_kanokuri->okurigana);
+        ret = is_non_hendoku(temp_kanokuri->okurigana);//(t_index,temp_kanokuri->okurigana);
         free(temp_kanokuri);
         free(temp_kanokuri_index);
     }
     else{
-        ret = is_non_hendoku(index,kana);
+        ret = is_non_hendoku(kana);//(index,kana)
     }
     return((ret==0)? 199: GENERAL);
 }
@@ -1095,7 +1090,7 @@ int     find_jukugo(int index, unsigned char* kun)
     int             juku[10];
     kanlist         *temp_list;
     unsigned char   *temp_bp,*temp_bp1,*temp_bp2;
-    unsigned char   temp_okuri[31];
+    unsigned char   temp_okuri[61];
     unsigned char   temp_kan[5];
     ret = 0;
     temp_okuri[0] = '\0';
@@ -1300,7 +1295,7 @@ int     juku_before_identify(int index, kanokuri* kan_temp_1, unsigned char* bp)
  訓読文上で熟語と見られる漢字がKan_index上でも熟語となっているかどうかを判定する。訓読文上だけで熟語に見えたものには1、
  他に同様な熟語がkan_index上にある場合には-2、見かけにも合致しないものは、−1を返す。合致するものには0を返す。
  */
-int     juku_after_identify(int index, int kun_jun_t, kanokuri* temp_kan, unsigned char* bp)
+int     juku_after_identify(int index, int kun_jun_t, unsigned char* bp)
 {
     int             pre;
     int             temp_ret;
@@ -1364,7 +1359,7 @@ long long int     exist_juku( unsigned char* kan1, unsigned char* kan2,int post)
  は、後続漢字が本当に後続漢字かを判定する。本当に後続漢字であることと判定すれば、suc_indexをそのまま、そうでなければ、
  次に候補となる漢字を呼び出す。うまく見つからなければ、-1を返す。
  */
-int  is_real_succeeding_kan(int pre_index, int index, kanokuri* suc_bp, int jun, int juku)
+int  is_real_succeeding_kan(int pre_index, int index, kanokuri* suc_bp)
 {
     int temp_index;
     long long int ret;
@@ -1498,13 +1493,13 @@ int     normalize_kun(unsigned char* kun)
  */
 int     duplicate_case( int index, int kun_jun, unsigned char* kun_p)
 {
-    int     ret, second_ret, temp_index, dup_result, moji_c;
+    int     ret, second_ret, temp_index, dup_result;//, moji_c;
 
     ret = 1;
     temp_index = index;
     loop_error = 0;
     dup_result = is_exhausted_dup_kan(index);
-    moji_c = count_moji(kun_p,kan_index[index]->oya);
+   // moji_c = count_moji(kun_p,kan_index[index]->oya);
     if(dup_result == 0)
     {   temp_juku_flag_index = -1;
         return index;
@@ -1547,12 +1542,12 @@ kanokuri_index* trace_juku(int index, unsigned char* bp)
     kanokuri_index* temp_kindex;
     kanokuri*       temp_kanokuri;
     unsigned char*  temp_bp;
-    int             temp_i, ret, temp_juku, juku_on,i;
+    int             temp_i, temp_juku, juku_on,i;//ret
     temp_juku = 0;
     i = 0;
     temp_i = index;
     temp_juku = kan_index[temp_i]->jukugo;
-    ret = 0;
+    //ret = 0;
     if(temp_juku > 1){
         juku_on = 1;
     }
@@ -1584,7 +1579,7 @@ kanokuri_index* trace_juku(int index, unsigned char* bp)
  pre_connect_match()は、前の語との繋がりを判定する。connect_matchが本体だが、その前提となる処理を行う。
  引数は、判定すべきkan_index上のindex,現在の訓順jun,そして現在の漢字のkanokuri構造体へのポインタである。戻り値は、connect_matchが返す妥当０と不当１であるが、前処理の途中で問題を生じた場合、-1を返すようになっている。
  */
-int     pre_connect_match(int index, int jun, kanokuri* kan_t, int target)
+int     pre_connect_match(int index, int jun, kanokuri* kan_t)
 {
     int             pre_kan, ret;
     unsigned char*  pre_kan_okuri;
@@ -1597,7 +1592,7 @@ int     pre_connect_match(int index, int jun, kanokuri* kan_t, int target)
 /*
  post_connect_match()は、後の語との繋がりを判定する。connect_matchが本体だが、其の前提となる処理を行う。引数は、pre_connect_matchと同じようにしている。
  */
-int     post_connect_match(int index, int jun, kanokuri* kan_t, int target)
+int     post_connect_match(int index, kanokuri* kan_t, int target)
 {
     kanokuri*   temp_suc;
     kanokuri_index* juku_temp_kan_t = NULL;
@@ -1610,12 +1605,12 @@ int     post_connect_match(int index, int jun, kanokuri* kan_t, int target)
     if(temp_suc == NULL) return -1;
     temp_suc_i = find_kan(temp_suc->kan_point);
     if(temp_suc_i < 0) return -1;
-    temp_suc_i = is_real_succeeding_kan(target, temp_suc_i, temp_suc, jun, 0);
+    temp_suc_i = is_real_succeeding_kan(target, temp_suc_i, temp_suc);
     if(temp_suc_i < 0) return -1;
     if(kan_index[temp_suc_i]->jufuku > 0){
         possible_alt = find_double_kanji(temp_suc_i,1);
         if(possible_alt > -1 ){
-            if(!is_kore_joji(temp_suc_i, temp_suc, jun)) temp_suc_i = possible_alt;
+            if(!is_kore_joji(temp_suc_i)) temp_suc_i = possible_alt;
             if(is_siyeki_on(temp_suc_i, temp_suc->okurigana))temp_suc_i = possible_alt;
         }
     }
@@ -1643,7 +1638,7 @@ int      is_kaisi(int index,unsigned char* okuri,unsigned char* tuduki)
 int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
 {
     kanokuri*       temp_kan;
-    kanokuri*       t_temp_kan;
+    //kanokuri*       t_temp_kan;
     kanokuri_index* t_juku;
     unsigned char*  next_kan_point;
     int         juku_ret_pre, juku_ret_post,begin,last,ret,final;
@@ -1657,7 +1652,7 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
         printf("STOP!\n");
 #endif
     if(PID(kan_index[index]->prop,KORE) == 0){
-        if(!is_kore_joji(index,temp_kan,kun_jun_t)){
+        if(!is_kore_joji(index)){
             free(temp_kan);
             return 1;
         }
@@ -1676,7 +1671,7 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
     if(ret > 30 ) return 1;
 
     begin = (kun_jun_t == 1 ? 1 : 0);
-    if(!begin){juku_ret_post = juku_after_identify(index,kun_jun_t,temp_kan, kun_bp);}
+    if(!begin){juku_ret_post = juku_after_identify(index,kun_jun_t,kun_bp);}
     next_kan_point = del_kanji(kun_bp);
     next_kan_point = next_kanji(next_kan_point);
     last = (next_kan_point == NULL ? 1 : 0);
@@ -1686,7 +1681,7 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
     switch(ret){
         case 1:
             t_index = index;
-            t_temp_kan = temp_kan;
+            //t_temp_kan = temp_kan;
             t_juku = NULL;
             switch(juku_ret_pre){
                 case 0: free(temp_kan);
@@ -1694,7 +1689,7 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
                     break;
                 case 1:
                 case -1:
-                    final = 3 * post_connect_match(index, kun_jun_t, temp_kan,index);
+                    final = 3 * post_connect_match(index, temp_kan,index);
                     if(t_juku != NULL){
                         free(t_juku->p_kanokuri);
                         free(t_juku);
@@ -1714,12 +1709,12 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
                 final = 0; //return 0;
                 break;
             case -1:
-                final = 2 * pre_connect_match(index, kun_jun_t, temp_kan,index);
+                final = 2 * pre_connect_match(index, kun_jun_t, temp_kan);
                 t_index = find_double_kanji(index,1);
                 if(t_index > -1){
                     t_pre_index = preceeding_kan(kun_jun_t, 1);
                     if(t_pre_index > index){
-                        ret = pre_connect_match(t_index, kun_jun_t, temp_kan,t_index);
+                        ret = pre_connect_match(t_index, kun_jun_t, temp_kan);
                         if(ret == 0){
                             final = 1;
                         }
@@ -1748,17 +1743,17 @@ int     duplicated_kan( int index, int kun_jun_t, unsigned char* kun_bp)
                     break;
                 case 2:
                 case 4:
-                    final = 3 * post_connect_match(index, kun_jun_t, temp_kan,index);
+                    final = 3 * post_connect_match(index, temp_kan,index);
                     if( ret == 2){
-                        final = final +2 * pre_connect_match(index, kun_jun_t, temp_kan,index);
+                        final = final +2 * pre_connect_match(index, kun_jun_t, temp_kan);
                     }
                     free(temp_kan);
                     break;
                 case 3:
                 case 1:
-                    final = 3 * post_connect_match(index, kun_jun_t, temp_kan,index);
+                    final = 3 * post_connect_match(index, temp_kan,index);
                     if(ret == 1){
-                        final = final + 2 * pre_connect_match(index, kun_jun_t, temp_kan,index);
+                        final = final + 2 * pre_connect_match(index, kun_jun_t, temp_kan);
                     }
                     free(temp_kan);
                     break;
@@ -2071,7 +2066,7 @@ kanaindex* expand_kana(kanaindex* ori_kana, char a, char b, int flag)
     kanaindex* temp_kana;
     kanaindex* final;
     int         temp_p1,temp_p2;
-    int         test;
+    //int         test;
     temp_p1 = 0;
     temp_p2 = 0;
     temp_kana = ori_kana;
@@ -2088,13 +2083,13 @@ kanaindex* expand_kana(kanaindex* ori_kana, char a, char b, int flag)
     if(flag == 2)
     {
         temp_c = hojo(b, temp_p2);
-        test = strcmp((char*)temp_c,"");
+        //test = strcmp((char*)temp_c,"");
     while(*temp_c != '\0')
         {
             temp_kana = redup_kanaindex(temp_kana,temp_c,flag);
             temp_p1++;
             temp_c = hojo(b, temp_p1);
-            test = strcmp((char*)temp_c,"");
+            //test = strcmp((char*)temp_c,"");
         }
     }
     final = temp_kana->next;
@@ -2686,9 +2681,9 @@ int okiji_identify(kanaindex* source_okiji, int kan_i,int r_or_l)
  */
 void reordering(int ind, int course)
 {
-    int jun, end_jun, temp_ind, end_ind;
+    int jun, temp_ind, end_ind;
     jun = kan_index[ind]->kun_jun;
-    end_jun = jun + course -1;
+    //end_jun = jun + course -1;
     end_ind = ind + course -1;
     temp_ind = 0;
     while(kan_index[temp_ind] != NULL){
@@ -2884,6 +2879,7 @@ void    distribute_yomi_in_jukugo(int index, int num, unsigned char* yomi)
         switch(diff){
             case 0: while(i < num){
                 strncpy((char*)kan_index[index + i]->yomi,(char*)yomi,3);
+                kan_index[index + i]->yomi[3] = '\0';
                 kaeri_index[index + i]->juku = 1;
                 yomi = yomi + 3;
                 i++;
@@ -2892,6 +2888,7 @@ void    distribute_yomi_in_jukugo(int index, int num, unsigned char* yomi)
                 break;
             case 1: while(i < num -1){
                 strncpy((char*)kan_index[index + i]->okuri,(char*)yomi,3);
+                kan_index[index + i]->okuri[3] = '\0';
                 kaeri_index[index + i]->juku = 1;
                 yomi = yomi + 3;
                 i++;
@@ -2918,13 +2915,13 @@ int kana_to_kan(kanaindex* source_okurig, int kan_i,int kan_n, int r_or_l)
     unsigned char* temp;
     unsigned char* temp_1;
     unsigned char* temp_okuri;
-    int            temp_okuri_n, ret, con_i,post_jundoku;
+    int            temp_okuri_n, ret, post_jundoku;
     kanaindex*  okurig;
     ret     = 0;
     course  = 1;
     toten   = 0;
     post_jundoku = -1;
-    con_i = kan_i;
+    //con_i = kan_i;
     if(r_or_l > -2) course = -1;
     if(course == 1)
     {
@@ -3045,9 +3042,9 @@ int kana_to_kan(kanaindex* source_okurig, int kan_i,int kan_n, int r_or_l)
                     return ret;
                 }
             }
-        next_okurig:   okurig = okurig->next;
+                    okurig = okurig->next;
         }
-    next_ip:  ip = ip + course;
+            ip = ip + course;
     }
     return -1;
 }
@@ -3177,9 +3174,9 @@ int      kanakan_identify(kanakan* kana_s)
                 }
                 kana = kana->next_kan;
             }
-        break_loop:            if(result == -1) {
-            i++;
-            continue;}
+            if(result == -1) {
+                                i++;
+                                continue;}
             if(result != 0) result = odori_identify(i);
             if(result != 0){
                 kana = kana_s;
@@ -3292,7 +3289,7 @@ void    clear_set_kanji(void)
  */
 oyakan* set_kanji(unsigned char* stream)
 {
-    int             i, com_flag;
+    int             i;
     oyakan*         kanji_1;
     kaeriten*       kaeri;
     kanlist*        temp_list;
@@ -3304,14 +3301,14 @@ oyakan* set_kanji(unsigned char* stream)
     unsigned char*  temp_bp;
     unsigned char*  j_char;
     char         *  k_mode;
-    int             jun, juf_n, code_n, line_flag;
+    int             jun, juf_n, code_n;
     long int        temp_prop;
     char            line_mode;
     chofuku_n = 0;
     jun = 0;
-    com_flag = 0;
+    //com_flag = 0;
     bp = stream;
-    line_flag = 0;
+    //line_flag = 0;
     line_mode = 'x';
     //space = 1;
     temp_comment = NULL;
@@ -3669,6 +3666,17 @@ unsigned char* read_buf_kan( FILE* i_file, FILE* o_file)
         strncpy((char*)bp_e,(char*)temp_char_kan,cont_flag);
         bp_e = bp_e + cont_flag;
         cont_flag = 0;
+        if(*bp_s == '<'){
+            kan_haku_flag = 1;
+            add_read_num();
+            temp_char_kan[0] = '\0';
+            bp_s = input_buf_haku;
+            bp_e = input_buf_haku;
+            init_buf(bp_s, HAKU_BUF);
+            cont_flag = write_haku_moji_mode(i_file, temp_char_kan);
+            opening_kan(o_file);
+            return NULL;
+        }
     }
     temp_char_kan[0] = '\0';
     while( 1 ){
@@ -4089,12 +4097,12 @@ void    kunjun_clear(void)
 int     haku_kuten_error( void )
 {
     int               i, kutou;
-    unsigned char*    haku_string;
+    //unsigned char*    haku_string;
     kutou = kan_length - 1;
     i = kutou;
     while(i > 0 && kan_index[i]->kun_jun < 1) i--;
     if(kutou - i > 3){
-        haku_string = kanindex_to_str(i, 0);
+        //haku_string = kanindex_to_str(i, 0);
         return 1;
     }
     else{
@@ -4250,10 +4258,10 @@ int find_juku_pair(pair juku_pair[], int start, int end)
 int relocation_jukugo(pair jukugo_pair,pair dist_pair,int start)
 {
     unsigned char temp_kan[5][5];
-    int           kan_i,temp_i,i,j,length,temp_s;
+    int           temp_i,i,j,length,temp_s;
     length = jukugo_pair.post - jukugo_pair.pre;
     temp_s = start;
-    kan_i = 0;
+    //kan_i = 0;
     temp_i = jukugo_pair.pre;
     i = 0;
     while(kan_index[temp_i+i]!= NULL && temp_i+i < jukugo_pair.post + 1)
@@ -4546,7 +4554,7 @@ int mark_jukugo( unsigned char* kun )
 int     assign_kan_index( unsigned char* kun_ori )
 {
     int     errors, error_jun, temp_index, ret_index, temp_jun, code,i;
-    int     ori_hogo_rev, penalty,error_flag;
+    int     ori_hogo_rev, penalty, error_flag;
     int     debug_ret;
     int     e_num, k_index, g_index;
     int     kanji_ban;
@@ -4554,7 +4562,7 @@ int     assign_kan_index( unsigned char* kun_ori )
     pair*   swap;
 //    oyakan* temp_kan;
     // static int     temp_error_point;
-    int     j_flag;
+    //int     j_flag;
     unsigned char* kun;
     num_of_kaisi = -1;
     //juku_flag = 0;
@@ -4562,7 +4570,7 @@ int     assign_kan_index( unsigned char* kun_ori )
     errors = 0;
     error_jun = 0;
     temp_jun = 1;
-    j_flag = 0;
+    //j_flag = 0;
     if(hogo_rev != 1){
         ori_hogo_rev = hogo_rev;
     }
@@ -4595,7 +4603,7 @@ int     assign_kan_index( unsigned char* kun_ori )
             if(k_index > -1) temp_index = k_index;
         }
         if(kan_index[temp_index]->jufuku > 4 && kan_index[temp_index]->gtest < 9000 && kan_index[temp_index]->jufuku < MAX_PRIME){
-            j_flag++;
+            //j_flag++;
             if(err_count > 0 && !is_exhausted_dup_kan(temp_index)){
                 ret_index = temp_index;
             }
@@ -4712,9 +4720,13 @@ int     assign_kan_index( unsigned char* kun_ori )
                 printf("Is the order of kanji-reading possible from the point of assignment of kaeriten? \n'0' is OK, '1' is impossible. In this case %d \n", error_jun);
             }
             debug_ret = 0;
-            while(error_jun != 0 && debug_ret < 3){
+            while(error_jun != 0 && debug_ret < 2){
                 printf("Error %d\n", error_jun);
                 error_flag = erronious_point_in_kunjun();
+                if(!error_flag){
+                    debug_ret++;
+                    continue;
+                }
                 swap = swap_pair_return();
                 if(read_verbose() > 0){
                     print_dubious_kaeri();
@@ -4786,7 +4798,7 @@ int force_swapping(int chofuku,int error, int pre_error)
  */
 int     process_kan(unsigned char* kun )
 {
-    int ret, count,temp_chofuku,jukugo,first_time;
+    int ret, temp_chofuku,jukugo = 0,first_time;
     static int normal, f_chofuku;
     non_done = 0;
     hogo_rev = 1;
@@ -4797,7 +4809,7 @@ int     process_kan(unsigned char* kun )
 start:
     ret = 0;
     err_count = 0;
-    count = 0;
+    //count = 0;
     temp_juku_flag_index = -1;
     if(first_time){
         if(chofuku_n > 4){
@@ -4809,6 +4821,7 @@ start:
         normal = normalize_kun(kun);
         f_chofuku = factorial(temp_chofuku-1);
         jukugo = mark_jukugo(kun);
+        if(read_verbose() > 0)printf("The number of jukugo in the sentence is %d\n",jukugo);
         first_time = 0;
     }
     while(err_count < f_chofuku)

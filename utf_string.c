@@ -516,11 +516,11 @@ int is_utf_kan_or_yaku(unsigned char* cc)
     if(is_utf_toten(cc))return 2;
     if(is_utf_kuten(cc))return 2;
     if(is_utf_nakaten(cc))return 5;
-    if((ret = is_utf_kakko(cc)) > 0)
+    if(is_utf_kakko(cc))
     {
         return 2;
     }
-    if((ret = is_utf_wkakko(cc)) > 0)
+    if(is_utf_wkakko(cc))
     {
         return 2;
     }
@@ -1001,9 +1001,9 @@ int del_kana_posteria_list( unsigned char* kana_1, int max)
  */
 void  init_buf( unsigned char* buf,int max)
 {
-    unsigned char*  temp_bp;
-    int                   i;
-    temp_bp = buf;
+    //unsigned char*  temp_bp;
+    int    i;
+    //temp_bp = buf;
     for(i=0;i<max;i++)
     {
         *buf = '\0';

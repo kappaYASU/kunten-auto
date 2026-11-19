@@ -7,11 +7,13 @@
 #ifndef kunten_h
 #define kunten_h
 
-#if defined(WINDOWSENV)
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
     #define WINDOWS
 #else
     #undef  WINDOWS
 #endif
+
+
 #undef  DEBUG
 //#define DEBUG_3
 
@@ -107,7 +109,7 @@ int            kana_to_kan(kanaindex* source_okurig, int kan_i,int kan_n, int r_
 kanokuri*      succeeding_kan(unsigned char* bp);
 kanlist*       identify_kanlist( unsigned char* kan, kanlist* temp_list);
 int            preceeding_kan( int t_jun, int mode);
-int            is_kore_joji( int index, kanokuri* temp_kan_kore,int kun_jun );
+int            is_kore_joji( int index );
 int            is_kaisi(int index,unsigned char* okuri,unsigned char* tuduki);
 int            find_kan(unsigned char* bp);
 int            hogo_property( int index, unsigned char* okuri_str, int mode);
@@ -119,19 +121,19 @@ int            find_double_kanji( int index, int mark);
 int            length_kan_index( void );
 int            for_variant_form( unsigned char* kun_bp);
 int            juku_before_identify(int index, kanokuri* kan_temp_1, unsigned char* bp);
-int            juku_after_identify(int index, int kun_jun_t, kanokuri* temp_kan, unsigned char* bp);
+int            juku_after_identify(int index, int kun_jun_t,unsigned char* bp);
 int            connect_match( int kan_1, unsigned char* okuri1, int kan_2, kanokuri* kan_okuri2, unsigned char* bp, int juku);
 int            duplicate_case( int index, int kun_jun, unsigned char* kun_p);
 int            find_rengo(unsigned char* kan1, unsigned char* kan2, int start, int mode);
 int            is_rengo(int index, unsigned char* kan);
 int            assign_kan_index( unsigned char* kun );
 int            force_swapping(int chofuku,int error, int pre_error);
-int            is_real_succeeding_kan(int pre_index, int index, kanokuri* suc_bp, int jun, int juku);
+int            is_real_succeeding_kan(int pre_index, int index, kanokuri* suc_bp);
 int            okiji_kaisi_identify( int index, int max );
 int            is_siyeki_on(int index, unsigned char* okuri);
 int            itai_kanji_comp(unsigned char* kan1, unsigned char* kan2);
-int            pre_connect_match(int index, int jun, kanokuri* kan_t, int target);
-int            post_connect_match(int index, int jun, kanokuri* kan_t, int target);
+int            pre_connect_match(int index, int jun, kanokuri* kan_t);
+int            post_connect_match(int index, kanokuri* kan_t, int target);
 int            is_conj_josi( int index, unsigned char* josi, unsigned char* okuri, int mode);
 int            stop_infinite_loop(int error, int temp_i, int pre_temp_i);
 int            normalize_kun(unsigned char* kun);

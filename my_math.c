@@ -89,6 +89,7 @@ int prime_num( int ord, int max, int flag )
 {
     int     temp;
     if(ord > 30) return 1;
+    if(ord < 1) ord = 1;
     temp = prime_n[ord-1];
     if(temp >= max)
     {
@@ -144,7 +145,7 @@ int     find_pre( int m, int list_max)
  */
 int    init_list_jun( void )
 {
-    int     index_kan_list, index_kun_jun, temp_index,temp_kun_jun;
+    int     index_kan_list, temp_index,temp_kun_jun;
     int     kaeri_num;
     oyakan* temp_kan;
     index_kan_list = 0;
@@ -168,8 +169,8 @@ int    init_list_jun( void )
     list_jun[index_kan_list].ori_num = 0;
     list_jun[index_kan_list].kun_jun_num = MAX_MOJI_LIST;
     list_length = index_kan_list;
-    index_kun_jun = 1;
-    index_kan_list = 0;
+    //index_kun_jun = 1;
+    //index_kan_list = 0;
     kaeri_num = 0;
     temp_index = 0;//ori: temp_index = -1;
     max_kunjun = find_max_kunjun(list_length);
@@ -189,10 +190,6 @@ int    init_list_jun( void )
         }
         temp_index++;
     }
-//    for(i=0;i<list_length+2;i++)
-//    {
-//        printf("No.%d: ori_num=%02d; kaeri_num=%02d; kun_jun=%02d; pair.pre=%02d; pair_post=%02d; check=%09ld \n ",i,list_jun[i].ori_num,list_jun[i].kaeri_num,list_jun[i].kun_jun_num,list_jun[i].kun_jun_pair.pre,list_jun[i].kun_jun_pair.post,list_jun[i].check);
-//    }
     return list_length;
 }
 /*
@@ -289,15 +286,15 @@ int     judge_kunjun(pair temp_kaeri)
 */
 int     judge_kunjun_2nd( int max)
 {
-    int     mark, mark2, index,temp_pre_1, temp_pre_2, temp_post_1, temp_post_2, temp_index, ret;
+    int     mark, index,temp_pre_1, temp_pre_2, temp_index, ret;
     index = 1;
     mark = 0;
     ret  = 0;
     
-    temp_pre_1 = -1;
-    temp_pre_2 = -1;
-    temp_post_1 = -1;
-    temp_post_2 = -1;
+    //temp_pre_1 = -1;
+    //temp_pre_2 = -1;
+    //temp_post_1 = -1;
+    //temp_post_2 = -1;
     temp_index = -1;
     while( index < max)
     {
@@ -309,7 +306,7 @@ int     judge_kunjun_2nd( int max)
             if(temp_index < index){
                 temp_pre_2 = find_pre(index, max);
                 temp_pre_1 = find_pre(temp_index, max);
-                mark2 = each_kaeri_pairs[index].jun;
+                // mark2 = each_kaeri_pairs[index].jun;
                 if(each_kaeri_pairs[temp_pre_1].jun < 0 && each_kaeri_pairs[temp_pre_2].jun < 0 && each_kaeri_pairs[temp_pre_1].jun < 0 && index < temp_pre_1 && temp_pre_1 < temp_pre_2 ){
                     ret = 2;
                     dubious_kaeri.pre = each_kaeri_pairs[temp_index].pre;
@@ -425,8 +422,8 @@ int     check_kunjun(void)
     index = 0;
     max = init_list_jun();
     kaeri_num = 0;
-    ret = 0;
-    ret2 = 0;
+    //ret = 0;
+    //ret2 = 0;
     dubious_kaeri.pre = -1;
     dubious_kaeri.post = -1;
     dubious_kaeri_num = -1;
@@ -470,14 +467,6 @@ int     check_kunjun(void)
         i++;
     }
     ret2 = judge_kunjun_2nd(max);
-//    if(read_verbose() > 0){
-//        printf("judge_kunjun = %d; judge_kunjun_2nd = %d\n", ret, ret2);
-//    }
-//    printf("max = %02d\n",max);
-//    for(i=0;i<max;i++)
-//    {
-//        printf("each_kaeri_pairs:pre=%02d;post=%02d;jun=%d\n",each_kaeri_pairs[i].pre,each_kaeri_pairs[i].post,each_kaeri_pairs[i].jun);
-//    }
     return ret + ret2;
 }
 /*
@@ -494,7 +483,8 @@ int prime_simple_factorization(long int m, int least_limit, int greatest_limit)
 {
     int     p, i;
     i = least_limit;
-    p = 1;
+    // p = 1;
+    if(i < 1) i = 1;
     while( 1 ){
         p = prime_num( i, greatest_limit,0);
         if(p == 1) break;
@@ -506,7 +496,7 @@ int prime_simple_factorization(long int m, int least_limit, int greatest_limit)
 int   simple_factorization(long int m)
 {
     int     p, i;
-    i = 0;
+    i = 1;
     p = 2;
     while(p != 1)
     {
@@ -855,6 +845,7 @@ int     erronious_point_in_kunjun( void )
     post_i = dubious_kaeri.post;
     swap_pair.pre = -1;
     swap_pair.post = -1;
+    ret = 0;
     if(post_i > pre_i){
         temp_i = post_i;
         post_i = pre_i;
@@ -865,7 +856,6 @@ int     erronious_point_in_kunjun( void )
         jufuku[i].index = -1;
         jufuku[i].check = 0;
     }
-    ret = 1;
     jufuku_num = 0;
     i = pre_i;
     while (i > post_i - 1)
@@ -885,7 +875,7 @@ int     erronious_point_in_kunjun( void )
                         jufuku[jufuku_num].check = jufuku[j].kind;
                         swap_pair.pre = jufuku[j].index;
                         swap_pair.post = i;
-                        ret = 0;
+                        ret += 1;
                     }
                 }
             }
@@ -899,7 +889,7 @@ int     erronious_point_in_kunjun( void )
         if(temp_ret > -1) break;
         temp_kaeri_num--;
     }
-    if(temp_ret < 0) return 1;
+    if(temp_ret < 0) return ret;
     post_i = temp_ret;
     for(i = 0; i < 6; i++){
         jufuku[i].kind = 0;
