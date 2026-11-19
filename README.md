@@ -50,3 +50,5 @@ gcc -o kunten kunten_main.o kunten.o utf_string.o my_math.o tex_command.o
 
 新たにMakefileを入れた。make命令で環境に応じたコンパイルができる。compile.shは使う必要がなくなった。(2026/11/13)
 
+Makefileとkunten.hでコンパイル環境、動作環境を自動で選択するようにしたので、makeだけでmacOS,Windows,Linuxを問わずそのままコンパイルできるようになった。同時に幾つかの標準ライブラリの仕様に依存していた関数を汎用性を持たせるように改変した。(2026/11/19)
+
